@@ -8,7 +8,7 @@
 		"global_fetch_strictly_public"
 	],
 	"vars": {
-		"NEXT_PUBLIC_DOMAIN": "",
+		"NEXT_PUBLIC_DOMAIN": "next-gdrive-index.diegonr.workers.dev",
 		"SITE_PASSWORD": ""
 	},
 	"assets": {

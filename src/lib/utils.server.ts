@@ -73,7 +73,7 @@ class EncryptionService {
       if (!crypto) throw new Error("Crypto Web API is not available in this environment.");
 
       const [cipherText, iv] = hash.split(this.delimiter);
-      if (!cipherText || !iv) throw new Error("Invalid hash format.");
+      if (!cipherText || !iv) throw new Error("[400] Invalid hash format.");
 
       const ivBytes = hexToUint8Array(iv);
       const cipherBytes = hexToUint8Array(cipherText);
