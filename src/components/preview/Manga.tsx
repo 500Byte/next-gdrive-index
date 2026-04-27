@@ -104,7 +104,8 @@ export default function PreviewManga({ file }: Props) {
         if (!allowedExtensions.some((ext) => file.name.toLowerCase().endsWith(ext))) return;
         if (!final) return;
 
-        const blob = new Blob([data]);
+        const arrayBuffer = data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength) as ArrayBuffer;
+        const blob = new Blob([arrayBuffer]);
         const reader = new FileReader();
         reader.onload = () => {
           if (itemLoaded >= loadFirxtItems) return;
