@@ -1,0 +1,33 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"main": ".open-next/worker.js",
+	"name": "next-gdrive-index",
+	"compatibility_date": "2026-04-26",
+	"compatibility_flags": [
+		"nodejs_compat",
+		"global_fetch_strictly_public"
+	],
+	"vars": {
+		"NEXT_PUBLIC_DOMAIN": "",
+		"SITE_PASSWORD": ""
+	},
+	"assets": {
+		"directory": ".open-next/assets",
+		"binding": "ASSETS"
+	},
+	"services": [
+		{
+			"binding": "WORKER_SELF_REFERENCE",
+			"service": "next-gdrive-index"
+		}
+	],
+	"r2_buckets": [
+		{
+			"binding": "NEXT_INC_CACHE_R2_BUCKET",
+			"bucket_name": "next-gdrive-index-opennext-cache"
+		}
+	],
+	"images": {
+		"binding": "IMAGES"
+	}
+}
