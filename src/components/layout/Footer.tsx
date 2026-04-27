@@ -18,6 +18,7 @@ type Props = {
 export default function Footer({ content }: Props) {
   const pathname = usePathname();
   const loading = useLoading();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [loadTime, setLoadTime] = useState<number>(0);
 
   if (NO_LAYOUT_PATHS.some((path) => new RegExp(path).test(pathname))) return null;

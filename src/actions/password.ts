@@ -10,6 +10,9 @@ import { encryptionService, gdriveNoCache } from "~/lib/utils.server";
 
 import config from "config";
 
+/**
+ * Remove all saved passwords.
+ */
 export async function ClearSavedPasswords(): Promise<ActionResponseSchema> {
   const store = await cookies();
   if (store.has(COOKIES_NAME.indexPassword)) {
@@ -27,6 +30,10 @@ export async function ClearSavedPasswords(): Promise<ActionResponseSchema> {
   };
 }
 
+/**
+ * Check if the password of the index is correct.
+ * Only used if the index is password-protected.
+ */
 export async function CheckIndexPassword(): Promise<ActionResponseSchema> {
   let response: ActionResponseSchema = {
     success: true,
@@ -77,6 +84,11 @@ export async function CheckIndexPassword(): Promise<ActionResponseSchema> {
   return response;
 }
 
+/**
+ * Set the index / full site password.
+ * @param {string} password - The password to set.
+ * @returns {ActionResponseSchema}
+ */
 export async function SetIndexPassword(password: string): Promise<ActionResponseSchema> {
   try {
     const store = await cookies();
@@ -100,6 +112,9 @@ export async function SetIndexPassword(password: string): Promise<ActionResponse
   }
 }
 
+/**
+ * Check if the password of the current folder is correct.
+ */
 export async function CheckPagePassword(
   paths: {
     path: string;
@@ -196,6 +211,11 @@ export async function CheckPagePassword(
   };
 }
 
+/**
+ * Set the password for the current folder.
+ * @param path - The path of the folder.
+ * @param password - The password to set.
+ */
 export async function SetPagePassword(path: string, password: string): Promise<ActionResponseSchema> {
   try {
     const store = await cookies();

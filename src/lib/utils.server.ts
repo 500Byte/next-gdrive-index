@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/unbound-method */
 import { decodeBase64, decodeBase64url, encodeBase64, encodeBase64url } from "@oslojs/encoding";
 import { SignJWT, importPKCS8 } from "jose";
 import "server-only";
@@ -121,7 +122,7 @@ class GoogleDriveEdgeClient {
     const decodedB64 = base64Decode<string>(serviceB64);
     if (!decodedB64) throw new Error("Failed to decode GD_SERVICE_B64");
     
-    let json: unknown = JSON.parse(decodedB64);
+    const json: unknown = JSON.parse(decodedB64);
     
     if (json && typeof json === 'object' && 'private_key' in json) {
       const jsonObj = json as Record<string, unknown>;

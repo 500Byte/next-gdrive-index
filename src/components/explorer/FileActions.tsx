@@ -84,6 +84,7 @@ export default function FileActions() {
     if (!debouncedSearchInput) return;
     void onSearch();
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedSearchInput]);
 
   const onSearch = async () => {

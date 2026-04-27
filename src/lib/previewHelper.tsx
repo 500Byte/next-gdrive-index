@@ -15,11 +15,19 @@ type FileTypes =
   | "manga"
   | "executable";
 
+/**
+ * File extensions and their corresponding file types
+ * Add more file extensions if needed
+ */
 const extensionsMap: Record<FileTypes, string[]> = {
   image: ["png", "jpg", "jpeg", "gif", "webp", "svg", "ico", "bmp", "avif"],
   video: [
     "mp4",
     "mkv",
+    "webm",
+    // "avi",
+    // "mov",
+    // "flv",
     // "wmv",
     "mpg",
     "mpeg",

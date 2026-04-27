@@ -36,6 +36,16 @@ export async function middleware(req: NextRequest) {
     return response;
   }
 
+  // Skip the middleware if the pathname is the root
+  if (pathname === "/") return response;
+
+  // Get search params
+  const searchParams = new URLSearchParams(req.nextUrl.search);
+  // Check if it's has raw query
+  const hasRawQuery = searchParams.get("raw") === "1";
+
+  // If it's has raw query, redirect it to `/api/raw?url=${pathname}`
+  if (hasRawQuery) {
     const rawUrl = `/api/raw?url=${encodeURIComponent(pathname)}`;
     return new NextResponse(null, {
       status: 307,

@@ -367,6 +367,10 @@ export default function EmbedPage({ file, type }: Props) {
               name='Minimize2'
               className='size-6'
             />
+          </div>
+        ),
+        // EnterPiP: () => null,
+        // ExitPiP: () => null,
         CaptionsOn: () => (
           <div className='grid h-full w-full place-items-center'>
             <Icon
@@ -687,6 +691,7 @@ function PlaybackMenu() {
       <Menu.Content className='vds-menu-items'>
         <Menu.RadioGroup
           className='vds-radio-group'
+          value={options.selectedValue}
         >
           {/* eslint-disable-next-line @typescript-eslint/unbound-method */}
           {options.map(({ value, select, label }) => (
@@ -732,6 +737,7 @@ function AudioGain() {
       <Menu.Content className='vds-menu-items'>
         <Menu.RadioGroup
           className='vds-radio-group'
+          value={options.selectedValue}
         >
           {/* eslint-disable-next-line @typescript-eslint/unbound-method */}
           {options.map(({ value, select, label }) => (
