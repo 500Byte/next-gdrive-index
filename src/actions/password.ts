@@ -153,14 +153,14 @@ export async function CheckPagePassword(
       corpora: "drive",
     }),
   });
-  if (!findPasswordResponse.data.files?.length)
+  if (!findPasswordResponse.files?.length)
     return {
       success: true,
       message: `No password file found on current path (${toUrlPath(paths)})`,
       data: undefined,
     };
 
-  const protectedFolderPassword = findPasswordResponse.data.files
+  const protectedFolderPassword = findPasswordResponse.files
     .filter((item) => folderIds.includes(item.parents?.[0] ?? ""))
     ?.shift();
   if (!protectedFolderPassword)
@@ -186,16 +186,10 @@ export async function CheckPagePassword(
     };
 
   const savedPasswordValue = await encryptionService.decrypt(currentFolderPassword);
-  const { data: passwordFile } = await gdriveNoCache.files.get(
-    {
-      fileId: protectedFolderPassword.id!,
-      alt: "media",
-      supportsAllDrives: config.apiConfig.isTeamDrive,
-    },
-    {
-      responseType: "text",
-    },
-  );
+  const passwordFile = await gdriveNoCache.files.getContent(
+    protectedFolderPassword.id!, {
+    supportsAllDrives: config.apiConfig.isTeamDrive,
+  });
   if (!passwordFile)
     return {
       success: false,

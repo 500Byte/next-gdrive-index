@@ -11,12 +11,6 @@ import config from "config";
 
 import { ValidatePaths } from "./paths";
 
-/**
- * List files in a folder
- * @param {object} options
- * @param {string} options.id (optional) - Folder ID to fetch, default is root folder
- * @param {string} options.pageToken (optional) - Page token to fetch next page
- */
 export async function ListFiles({ id, pageToken }: { id?: string; pageToken?: string } = {}): Promise<
   ActionResponseSchema<{
     files: z.infer<typeof Schema_File>[];
@@ -34,7 +28,7 @@ export async function ListFiles({ id, pageToken }: { id?: string; pageToken?: st
     " and ",
   );
 
-  const { data } = await gdrive.files.list({
+  const data = await gdrive.files.list({
     q: filterQuery,
     fields: `files(${config.apiConfig.defaultField}), nextPageToken`,
     orderBy: config.apiConfig.defaultOrder,
@@ -104,15 +98,10 @@ export async function ListFiles({ id, pageToken }: { id?: string; pageToken?: st
   };
 }
 
-/**
- * Get file details
- * @param id - File ID to fetch
- */
 export async function GetFile(id: string): Promise<ActionResponseSchema<z.infer<typeof Schema_File> | null>> {
   const decryptedId = await encryptionService.decrypt(id ?? config.apiConfig.rootFolder);
 
-  const { data } = await gdrive.files.get({
-    fileId: decryptedId,
+  const data = await gdrive.files.get(decryptedId, {
     fields: config.apiConfig.defaultField,
     supportsAllDrives: config.apiConfig.isTeamDrive,
   });
@@ -164,10 +153,6 @@ export async function GetFile(id: string): Promise<ActionResponseSchema<z.infer<
   };
 }
 
-/**
- * Get readme file inside a folder
- * @param id - Folder ID to fetch, default is root folder
- */
 export async function GetReadme(id: string | null = null): Promise<
   ActionResponseSchema<{
     type: "markdown" | "txt";
@@ -187,7 +172,7 @@ export async function GetReadme(id: string | null = null): Promise<
     `'${decryptedId}' in parents`,
   ].join(" and ");
 
-  const { data } = await gdrive.files.list({
+  const data = await gdrive.files.list({
     q: filterQuery,
     fields: `files(${config.apiConfig.defaultField}, parents), nextPageToken`,
     orderBy: config.apiConfig.defaultOrder,
@@ -224,12 +209,8 @@ export async function GetReadme(id: string | null = null): Promise<
     };
 
   switch (file.mimeType) {
-    case "application/vnd.google-apps.shortcut":
-      const { data: shortcutData } = await gdrive.files.get({
-        fileId: file.id!,
-        alt: "media",
-        supportsAllDrives: config.apiConfig.isTeamDrive,
-      });
+    case "application/vnd.google-apps.shortcut": {
+      const shortcutData = await gdrive.files.getShortcutDetails(file.id!);
       const parsedData = Schema_File_Shortcut.safeParse(shortcutData);
       if (!parsedData.success)
         return {
@@ -249,45 +230,33 @@ export async function GetReadme(id: string | null = null): Promise<
           data: null,
         };
 
-      const { data: shortcutContent } = await gdrive.files.get(
-        {
-          fileId: parsedData.data.shortcutDetails.targetId,
-          alt: "media",
-          supportsAllDrives: config.apiConfig.isTeamDrive,
-        },
-        {
-          responseType: "text",
-        },
-      );
+      const shortcutContent = await gdrive.files.getContent(parsedData.data.shortcutDetails.targetId, {
+        supportsAllDrives: config.apiConfig.isTeamDrive,
+      });
 
       return {
         success: true,
         message: "README found",
         data: {
           type: parsedData.data.shortcutDetails.targetMimeType === "text/markdown" ? "markdown" : "txt",
-          content: shortcutContent as string,
+          content: shortcutContent,
         },
       };
+    }
     case "text/markdown":
-    case "text/plain":
-      const { data: content } = await gdrive.files.get(
-        {
-          fileId: file.id!,
-          alt: "media",
-          supportsAllDrives: config.apiConfig.isTeamDrive,
-        },
-        {
-          responseType: "text",
-        },
-      );
+    case "text/plain": {
+      const content = await gdrive.files.getContent(file.id!, {
+        supportsAllDrives: config.apiConfig.isTeamDrive,
+      });
       return {
         success: true,
         message: "README found",
         data: {
           type: file.mimeType === "text/markdown" ? "markdown" : "txt",
-          content: content as string,
+          content: content,
         },
       };
+    }
     default:
       return {
         success: true,
@@ -297,10 +266,6 @@ export async function GetReadme(id: string | null = null): Promise<
   }
 }
 
-/**
- * Get banner file inside a folder
- * @param id - Folder ID to fetch, default is root folder
- */
 export async function GetBanner(id: string | null = null): Promise<ActionResponseSchema<string | null>> {
   const isSharedDrive = !!(config.apiConfig.isTeamDrive && config.apiConfig.sharedDrive);
   const decryptedId = await encryptionService.decrypt(id ?? config.apiConfig.rootFolder);
@@ -314,7 +279,7 @@ export async function GetBanner(id: string | null = null): Promise<ActionRespons
     `'${decryptedId}' in parents`,
   ].join(" and ");
 
-  const { data } = await gdrive.files.list({
+  const data = await gdrive.files.list({
     q: filterQuery,
     fields: `files(${config.apiConfig.defaultField},parents)`,
     orderBy: config.apiConfig.defaultOrder,
@@ -342,41 +307,20 @@ export async function GetBanner(id: string | null = null): Promise<ActionRespons
   };
 }
 
-/**
- * Get content of text file
- * @param id - File ID to fetch
- */
 export async function GetContent(id: string): Promise<ActionResponseSchema<string>> {
   const decryptedId = await encryptionService.decrypt(id);
 
-  const { data, status, statusText } = await gdrive.files.get(
-    {
-      fileId: decryptedId,
-      alt: "media",
-      supportsAllDrives: config.apiConfig.isTeamDrive,
-    },
-    {
-      responseType: "text",
-    },
-  );
-  if (status !== 200)
-    return {
-      success: false,
-      message: "Failed to fetch content",
-      error: statusText,
-    };
+  const content = await gdrive.files.getContent(decryptedId, {
+    supportsAllDrives: config.apiConfig.isTeamDrive,
+  });
 
   return {
     success: true,
     message: "Content found",
-    data: data as string,
+    data: content,
   };
 }
 
-/**
- * Get siblings media files from the same parent folder
- * @param paths - Paths to check
- */
 export async function GetSiblingsMedia(paths: string[]): Promise<ActionResponseSchema<z.infer<typeof Schema_File>[]>> {
   const pathIds = await ValidatePaths(paths);
   if (!pathIds.success)
@@ -402,7 +346,7 @@ export async function GetSiblingsMedia(paths: string[]): Promise<ActionResponseS
     "(mimeType contains 'video' or mimeType contains 'audio')",
   ].join(" and ");
 
-  const { data } = await gdrive.files.list({
+  const data = await gdrive.files.list({
     q: filterQuery,
     fields: `files(${config.apiConfig.defaultField})`,
     orderBy: config.apiConfig.defaultOrder,

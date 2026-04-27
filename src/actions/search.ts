@@ -20,7 +20,7 @@ export async function SearchFiles(query: string): Promise<ActionResponseSchema<z
   const filterName = config.apiConfig.hiddenFiles.map((item) => `not name = '${item}'`).join(" and ");
   const filterQuery: string = [...config.apiConfig.defaultQuery, `name contains '${query}'`, filterName].join(" and ");
 
-  const { data } = await gdrive.files.list({
+  const data = await gdrive.files.list({
     q: filterQuery,
     fields: `files(${config.apiConfig.defaultField})`,
     orderBy: "name_natural desc",
@@ -87,8 +87,7 @@ export async function GetSearchResultPath(id: string): Promise<ActionResponseSch
   const isSharedDrive = !!(config.apiConfig.isTeamDrive && config.apiConfig.sharedDrive);
   const decryptedId = await encryptionService.decrypt(id ?? config.apiConfig.rootFolder);
 
-  const { data } = await gdrive.files.get({
-    fileId: decryptedId,
+  const data = await gdrive.files.get(decryptedId, {
     fields: "id,name,parents",
     supportsAllDrives: isSharedDrive,
   });

@@ -22,8 +22,7 @@ export async function GetFilePaths(fileName: string, parentId?: string): Promise
   while (parentIdTemp) {
     if (parentIdTemp === decryptedRootId) break;
 
-    const { data } = await gdrive.files.get({
-      fileId: parentIdTemp,
+    const data = await gdrive.files.get(parentIdTemp, {
       fields: "id,name,parents",
       supportsAllDrives: config.apiConfig.isTeamDrive,
     });
@@ -72,7 +71,7 @@ export async function ValidatePaths(
           corpora: "drive",
         }),
       })
-      .then(({ data }) => {
+      .then((data) => {
         if (!data.files?.length) return null;
 
         const object: PathFetch = {
