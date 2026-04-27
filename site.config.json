@@ -1,0 +1,87 @@
+{
+  "version": "2.4.2",
+  "cacheControl": "public, max-age=60, s-maxage=60, stale-while-revalidate",
+  "apiConfig": {
+    "isTeamDrive": false,
+    "defaultQuery": ["trashed = false", "(not mimeType contains 'google-apps' or mimeType contains 'folder')"],
+    "defaultField": "id, name, mimeType, thumbnailLink, fileExtension, modifiedTime, size, imageMediaMetadata, videoMediaMetadata, webContentLink, trashed",
+    "defaultOrder": "folder, name asc, modifiedTime desc",
+    "itemsPerPage": 50,
+    "searchResult": 5,
+    "proxyThumbnail": true,
+    "streamMaxSize": 104857600,
+    "specialFile": {
+      "password": ".password",
+      "readme": ".readme.md",
+      "banner": ".banner"
+    },
+    "hiddenFiles": [".password", ".readme.md", ".banner", ".banner.jpg", ".banner.png", ".banner.webp"],
+    "allowDownloadProtectedFile": false,
+    "temporaryTokenDuration": 1,
+    "maxFileSize": 4194304
+  },
+  "siteConfig": {
+    "siteName": "next-gdrive-index",
+    "siteNameTemplate": "%s - %t",
+    "siteDescription": "A simple file browser for Google Drive",
+    "siteIcon": "/logo.svg",
+    "siteAuthor": "mbaharip",
+    "favIcon": "/favicon.png",
+    "robots": "noindex, nofollow",
+    "twitterHandle": "@mbaharip_",
+    "showFileExtension": true,
+    "footer": [
+      { "value": "{{ poweredBy }}" },
+      { "value": "Made with ❤️ by [**{{ author }}**](https://github.com/mbaharip)" }
+    ],
+    "experimental_pageLoadTime": false,
+    "privateIndex": false,
+    "breadcrumbMax": 3,
+    "toaster": {
+      "position": "bottom-right",
+      "duration": 5000
+    },
+    "navbarItems": [
+      {
+        "icon": "FileText",
+        "name": "Documentation",
+        "href": "https://github.com/mbahArip/next-gdrive-index/wiki",
+        "external": true
+      },
+      {
+        "icon": "Github",
+        "name": "Github",
+        "href": "https://www.github.com/mbaharip",
+        "external": true
+      },
+      {
+        "icon": "Mail",
+        "name": "Contact",
+        "href": "mailto:support@mbaharip.com"
+      }
+    ],
+    "supports": [
+      {
+        "name": "Paypal",
+        "currency": "USD",
+        "href": "https://paypal.me/mbaharip"
+      },
+      {
+        "name": "Ko-fi",
+        "currency": "USD",
+        "href": "https://ko-fi.com/mbaharip"
+      },
+      {
+        "name": "Saweria",
+        "currency": "IDR",
+        "href": "https://saweria.co/mbaharip"
+      }
+    ],
+    "previewSettings": {
+      "manga": {
+        "maxSize": 15728640,
+        "maxItem": 10
+      }
+    }
+  }
+}

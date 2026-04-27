@@ -44,6 +44,7 @@ const config = {
     "@typescript-eslint/no-unnecessary-type-assertion": "off",
     "@typescript-eslint/dot-notation": "off",
     "@typescript-eslint/prefer-optional-chain": "off",
+    "@typescript-eslint/no-require-imports": "off",
     "@next/next/no-img-element": "off",
   },
   ignorePatterns: [],
