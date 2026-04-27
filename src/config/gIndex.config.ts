@@ -20,16 +20,6 @@ const config: z.input<typeof Schema_Config> = {
   basePath: IS_DEV ? "http://localhost:3000" : `https://${BASE_URL}`,
 
   /**
-   * Show deploy guide dropdown on navbar
-   * that contains the deploy guide and configurator
-   *
-   * Set this to false on final deployment, except you want to show it
-   *
-   * @default false
-   */
-  showGuideButton: true,
-
-  /**
    * How long the cache will be stored in the browser
    * Used for all pages and api routes
    *
@@ -46,8 +36,7 @@ const config: z.input<typeof Schema_Config> = {
      * You need to create a new folder and share it with the service account
      * Then, copy the folder id and paste it here
      */
-    rootFolder:
-      "e0a5fd4f9f7d05d220e517ef3ef4de7acf4277b64a09b916e8ee30703f0d6fd1cdbde87601a667ca61afd1a702e203e6ec;e13a51f76049b2e4e02c5d41",
+    rootFolder: "9b46eacdc2ce34c55d65a5c8abbda0b32811bec4b5131b294413072b1ccfdec9e58676f9e389edb8542bde8aa101b28056;57bc2f0a32c9e83e44f05cb8",
 
     /**
      * If your rootfolder inside a shared drive, you NEED to set this to true
@@ -62,8 +51,8 @@ const config: z.input<typeof Schema_Config> = {
      *
      * Then you need to encrypt it using `/api/internal/encrypt?q=:shared_drive_id` route
      */
-    isTeamDrive: true,
-    sharedDrive: "908f663cfd7fa75a494061c4856f03c76ac72430d9212bb34bc0707d1867cfece98664;5f1d6ec93903f2af7b9cfe2f",
+    isTeamDrive: false,
+    sharedDrive: "",
 
     defaultQuery: ["trashed = false", "(not mimeType contains 'google-apps' or mimeType contains 'folder')"],
     defaultField:
