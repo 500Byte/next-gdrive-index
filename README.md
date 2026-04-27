@@ -1,31 +1,26 @@
 ![banner](/public/og.webp)
 
 <p align='center'>
-	<a href='https://drive-demo.mbaharip.com' target='_blank'>Demo Site</a>
-		·
-	<a href='https://github.com/mbaharip/next-gdrive-index/wiki/Deployment-Guide' target='_blank'>Deploy Guide</a>
-		·
-	<a href='https://github.com/mbahArip/next-gdrive-index/wiki' target='_blank'>Documentation</a>
+	<a href='https://github.com/mbaharip/next-gdrive-index/wiki' target='_blank'>Documentation</a>
 </p>
 
 <p align='center'>
 	<img src='https://img.shields.io/github/package-json/v/mbaharip/next-gdrive-index?label=Production' alt='Production version' />
-	<img src='https://img.shields.io/github/package-json/v/mbaharip/next-gdrive-index/v2?label=Preview' alt='Dev version' />
 	<img src='https://img.shields.io/github/license/mbaharip/next-gdrive-index' alt='License' />
 	<img src='https://img.shields.io/badge/Next.js-15-black' alt='Next.js 15' />
+	<img src='https://img.shields.io/badge/Cloudflare-Workers-F38020' alt='Cloudflare Workers' />
 </p>
 
-## Quick Start
+## ⚠️ Work In Progress - Cloudflare Workers Migration
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/mbaharip/next-gdrive-index)
+This project is currently being migrated from Vercel to **Cloudflare Workers**. The deployment process and some features may change. Please refer to `AGENTS.md` for detailed technical documentation.
 
 > [!IMPORTANT]
-> Generate your configuration from your own deployment, not the demo site.
-> If you experience `Failed to decrypt data` errors, regenerate your configuration.
+> The Vercel deployment button has been removed. Use Cloudflare Workers deployment instead.
 
 ## What is this?
 
-`next-gdrive-index` is a modern Google Drive directory index that transforms your Google Drive into a browsable, searchable file sharing platform. It provides a clean, customizable interface for previewing and sharing files—images, videos, audio, documents, and even manga—without the clutter of Google Drive's native interface.
+`next-gdrive-index` is a modern Google Drive directory index that transforms your Google Drive into a browsable, searchable file sharing platform. It provides a clean, customizable interface for previewing and sharing files without the clutter of Google Drive's native interface.
 
 **Heavily inspired by** [onedrive-vercel-index](https://github.com/spencerwooo/onedrive-vercel-index) by [SpencerWooo](https://github.com/spencerwooo).
 
@@ -51,7 +46,7 @@
 
 ### Customization
 - **Theme System** — Built on shadcn/ui, fully customizable with CSS variables
-- **Site Configuration** — Edit `gIndex.config.ts` to customize:
+- **Site Configuration** — Edit `site.config.json` to customize:
   - Site name, description, and metadata
   - Navigation items and social links
   - File size limits and preview settings
@@ -71,26 +66,12 @@ Before deploying, you'll need:
 2. **Node.js 18+** (for local development)
    - Check version: `node --version`
 
-3. **Vercel Account** (recommended for deployment)
-   - Or any Node.js hosting platform
+3. **Cloudflare Account** (for deployment)
+   - Sign up at [cloudflare.com](https://cloudflare.com)
 
 ## Deployment
 
-### One-Click Deploy
-
-Click the Deploy button above, then:
-
-1. **Configure Environment Variables** in Vercel:
-   - `GD_SERVICE_B64` — Base64-encoded service account JSON
-   - `ENCRYPTION_KEY` — Secret key for encryption (generate a secure random string)
-   - `SITE_PASSWORD` — (Optional) Password for private mode
-
-2. **Generate Configuration**:
-   - Run `npm run setup` (or `node scripts/setup.mjs`) to start the interactive CLI
-   - Follow the prompts to configure your Google Drive credentials
-   - The CLI will generate your `.env` file and update `src/config/gIndex.config.ts` automatically
-
-### Manual Deployment
+### Cloudflare Workers Deployment
 
 ```bash
 # Clone the repository
@@ -100,21 +81,19 @@ cd next-gdrive-index
 # Install dependencies
 npm install
 
-# Add environment variables
-cp .env.example .env
-# Edit .env with your credentials
+# Set up environment variables
+npm run setup
 
-# Configure the application
-# Edit src/config/gIndex.config.ts
+# Build for Cloudflare Workers
+npm run build:cf
 
-# Build and start
-npm run build
-npm run start
+# Deploy
+npm run deploy
 ```
 
-## Configuration
+### Environment Variables
 
-### Environment Variables (`.env`)
+Create `.env` and `.dev.vars`:
 
 ```bash
 # Base64-encoded service account JSON
@@ -126,25 +105,17 @@ ENCRYPTION_KEY=
 # Site password (optional, for private mode)
 SITE_PASSWORD=
 
-# Domain (optional, without protocol)
-# NEXT_PUBLIC_DOMAIN=yourdomain.com
+# Root folder ID (encrypted)
+ROOT_FOLDER=
+
+# Shared drive ID (optional, encrypted)
+SHARED_DRIVE=
+
+# Domain configuration
+NEXT_PUBLIC_DOMAIN=your-domain.workers.dev
 ```
 
-### Application Config (`gIndex.config.ts`)
-
-Key configuration options:
-
-| Option | Description | Default |
-|--------|-------------|---------|
-| `siteConfig.siteName` | Site display name | `next-gdrive-index` |
-| `apiConfig.rootFolder` | Encrypted root folder ID | - |
-| `apiConfig.isTeamDrive` | Enable for Shared Drives | `false` |
-| `apiConfig.streamMaxSize` | Max preview file size (bytes) | `100MB` |
-| `apiConfig.maxFileSize` | Max download via API (bytes) | `4MB` |
-| `siteConfig.privateIndex` | Enable site-wide password | `false` |
-| `siteConfig.showFileExtension` | Show file extensions | `true` |
-
-See the [full configuration guide](https://github.com/mbaharip/next-gdrive-index/wiki/Configuration-Guide) for all options.
+See `AGENTS.md` for detailed configuration instructions.
 
 ## Development
 
@@ -152,30 +123,32 @@ See the [full configuration guide](https://github.com/mbaharip/next-gdrive-index
 # Install dependencies
 npm install
 
-# Start development server (with Turbopack)
-npm run dev:turbo
-
-# Or standard development server
+# Start development server
 npm run dev
 
-# Visit http://localhost:3000
+# Or test with Cloudflare Workers runtime
+npm run preview
+
+# Visit http://localhost:3000 or http://localhost:8787
 ```
 
 ### Available Scripts
 
 | Script | Description |
 |--------|-------------|
-| `npm run dev` | Start development server |
-| `npm run dev:turbo` | Start with Turbopack (faster) |
-| `npm run build` | Build for production |
-| `npm run start` | Start production server |
+| `npm run dev` | Start Next.js development server |
+| `npm run preview` | Start Cloudflare Workers dev server |
+| `npm run build` | Build for production (Node.js) |
+| `npm run build:cf` | Build for Cloudflare Workers |
+| `npm run deploy` | Deploy to Cloudflare Workers |
 | `npm run lint` | Run ESLint |
 | `npm run format` | Format code with Prettier |
-| `npm run cli` | Run configuration CLI |
+| `npm run setup` | Run configuration CLI |
 
 ## Tech Stack
 
 - **Framework:** [Next.js 15](https://nextjs.org/) (App Router)
+- **Deployment:** [Cloudflare Workers](https://workers.cloudflare.com/) via [OpenNext](https://opennext.js.org/cloudflare)
 - **UI Components:** [shadcn/ui](https://ui.shadcn.com/) + [Radix UI](https://www.radix-ui.com/)
 - **Styling:** [Tailwind CSS](https://tailwindcss.com/)
 - **Media Playback:** [Vidstack](https://www.vidstack.io/)
@@ -183,6 +156,7 @@ npm run dev
 - **Theming:** [next-themes](https://github.com/pacocoursey/next-themes)
 - **Form Handling:** [React Hook Form](https://react-hook-form.com/) + [Zod](https://zod.dev/)
 - **Virtualization:** [@tanstack/react-virtual](https://tanstack.com/virtual)
+- **JWT Signing:** [jose](https://github.com/panva/jose)
 
 ## Known Issues
 
