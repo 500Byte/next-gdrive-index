@@ -45,16 +45,6 @@ export default function FileItem({ data, layout }: Props) {
     () => !!(data.thumbnailLink && (data.mimeType.includes("image") || data.mimeType.includes("video"))),
     [data],
   );
-  // Using proxied URL to avoid CORS issues
-  // Also using state to load smaller thumbnail first
-  const [thumbnailUrl, setThumbnailUrl] = useState<string>(`/api/thumb/${data.encryptedId}?size=2`);
-  const [thumbnailLoading, setThumbnailLoading] = useState<boolean>(true);
-
-  // Unused for now
-  // Might be added on next version (?)
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [isShareDialogOpen, setShareDialogOpen] = useState<boolean>(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [copyStatus, setCopyStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
 
   const onOpenNewTab = useCallback(async () => {
@@ -92,7 +82,6 @@ export default function FileItem({ data, layout }: Props) {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const onShare = useCallback(async () => {
     setShareDialogOpen(true);
-  }, []);
   const onDownload = useCallback(async () => {
     const toastId = `generate-token-${data.encryptedId}`;
     toast.loading("Generating download token...", {
@@ -296,58 +285,3 @@ export default function FileItem({ data, layout }: Props) {
         open={isShareDialogOpen}
         onOpenChange={setShareDialogOpen}
       >
-        <ResponsiveDialogContent>
-          <ResponsiveDialogHeader>
-            <ResponsiveDialogTitle>Share link</ResponsiveDialogTitle>
-            <ResponsiveDialogDescription>
-              Share the link with others to give them access to this file.
-            </ResponsiveDialogDescription>
-          </ResponsiveDialogHeader>
-
-          <ResponsiveDialogBody className='flex flex-col gap-4'>
-            <pre className='flex w-full items-center justify-between gap-2 rounded-md bg-muted p-2 text-muted-foreground'>
-              <code className='grow select-all text-sm'>{new URL(filePath, config.basePath).toString()}</code>
-              <LoadingButton
-                loading={copyStatus === "loading"}
-                size={"icon"}
-                variant={"ghost"}
-                onClick={onCopy}
-              >
-                <Icon
-                  name={copyStatus === "idle" ? "Copy" : copyStatus === "success" ? "Check" : "X"}
-                  className={cn(
-                    "transition",
-                    copyStatus === "success" && "stroke-green-600",
-                    copyStatus === "error" && "stroke-destructive",
-                  )}
-                />
-              </LoadingButton>
-            </pre>
-
-            <Separator className='bg-input' />
-
-            <div className='grid gap-2 tablet:grid-cols-4'>
-              {["facebook", "twitter", "whatsapp"].map((platform) => (
-                <Link
-                  key={platform}
-                  href={shareUrl[platform as keyof typeof shareUrl]!}
-                  target='_blank'
-                  rel='noopener noreferrer'
-                  className={cn("flex items-center justify-center gap-2 rounded-md bg-muted p-2", "hover:bg-muted/50")}
-                >
-                  <span>{platform}</span>
-                </Link>
-              ))}
-            </div>
-          </ResponsiveDialogBody>
-
-          <ResponsiveDialogFooter>
-            <ResponsiveDialogClose asChild>
-              <Button variant={"secondary"}>Close</Button>
-            </ResponsiveDialogClose>
-          </ResponsiveDialogFooter>
-        </ResponsiveDialogContent>
-      </ResponsiveDialog> */}
-    </>
-  );
-}

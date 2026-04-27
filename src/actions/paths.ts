@@ -6,12 +6,6 @@ import { encryptionService, gdrive } from "~/lib/utils.server";
 
 import config from "config";
 
-/**
- * Get file paths from the root folder to the file.
- * @param {string} fileName - The file name.
- * @param {string} parentId - The parent ID of the file.
- * @returns {string} - The file path.
- */
 export async function GetFilePaths(fileName: string, parentId?: string): Promise<ActionResponseSchema<string>> {
   const decryptedRootId = await encryptionService.decrypt(config.apiConfig.rootFolder);
   if (!decryptedRootId)
@@ -44,11 +38,6 @@ type PathFetch = {
     mimeType: string;
   }[];
 };
-/**
- * Validate paths and return the ID of each path.
- * @param paths - The paths to validate.
- * @returns {ActionResponseSchema<{ id: string; path: string; mimeType: string; }[]>} - The validated paths.
- */
 export async function ValidatePaths(
   paths: string[],
 ): Promise<ActionResponseSchema<{ id: string; path: string; mimeType: string }[]>> {
@@ -114,11 +103,6 @@ export async function ValidatePaths(
       break;
     }
 
-    /**
-     * Check for current path index
-     * If it's 0 / the first path, make sure the parent is the root folder
-     * If it's not, make sure the parent is the previous path's ID
-     */
     for (const item of path.data) {
       if (path.index === 0) {
         if (item.parents !== decryptedRootId && item.parents !== decryptedSharedDrive) break;

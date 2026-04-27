@@ -12,7 +12,6 @@ export default function useLoading(awaitFor?: () => Promise<void>, deps: Depende
       setLoading(false);
     }
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps);
 
   return loading;

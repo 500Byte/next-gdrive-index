@@ -343,7 +343,6 @@ function PlaybackMenu() {
           className='vds-radio-group'
           value={options.selectedValue}
         >
-          {/* eslint-disable-next-line @typescript-eslint/unbound-method */}
           {options.map(({ value, select, label }) => (
             <Menu.Radio
               key={value}
@@ -389,7 +388,6 @@ function AudioGain() {
           className='vds-radio-group'
           value={options.selectedValue}
         >
-          {/* eslint-disable-next-line @typescript-eslint/unbound-method */}
           {options.map(({ value, select, label }) => (
             <Menu.Radio
               key={value}
