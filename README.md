@@ -3,7 +3,7 @@
 <p align='center'>
 	<a href='https://drive-demo.mbaharip.com' target='_blank'>Demo Site</a>
 		·
-	<a href='https://drive-demo.mbaharip.com/ngdi-internal/deploy' target='_blank'>Deploy Guide</a>
+	<a href='https://github.com/mbaharip/next-gdrive-index/wiki/Deployment-Guide' target='_blank'>Deploy Guide</a>
 		·
 	<a href='https://github.com/mbahArip/next-gdrive-index/wiki' target='_blank'>Documentation</a>
 </p>
@@ -86,9 +86,9 @@ Click the Deploy button above, then:
    - `SITE_PASSWORD` — (Optional) Password for private mode
 
 2. **Generate Configuration**:
-   - Visit `/ngdi-internal/deploy` on your deployed site
-   - Use the configurator to generate your `gIndex.config.ts`
-   - Download and place in `src/config/`
+   - Run `npm run setup` (or `node scripts/setup.mjs`) to start the interactive CLI
+   - Follow the prompts to configure your Google Drive credentials
+   - The CLI will generate your `.env` file and update `src/config/gIndex.config.ts` automatically
 
 ### Manual Deployment
 
@@ -144,7 +144,7 @@ Key configuration options:
 | `siteConfig.privateIndex` | Enable site-wide password | `false` |
 | `siteConfig.showFileExtension` | Show file extensions | `true` |
 
-See the [full configuration guide](https://drive-demo.mbaharip.com/ngdi-internal/deploy) for all options.
+See the [full configuration guide](https://github.com/mbaharip/next-gdrive-index/wiki/Configuration-Guide) for all options.
 
 ## Development
 
