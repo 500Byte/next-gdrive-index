@@ -256,45 +256,6 @@ export default function Navbar() {
                     className='mx-2 my-auto h-6'
                   />
 
-                  {!!config.showGuideButton ? (
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button
-                          variant={"ghost"}
-                          size={"sm"}
-                          className={`text-sm`}
-                        >
-                          Internal Links
-                          <Icon name={"ChevronDown"} />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent>
-                        <DropdownMenuItem asChild>
-                          <Link
-                            prefetch={false}
-                            href={"/ngdi-internal/deploy"}
-                            className='flex w-full items-center justify-start gap-2'
-                          >
-                            <Icon name={"Book"} />
-                            Deploy Guide
-                          </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                          <Link
-                            prefetch={false}
-                            href={"/ngdi-internal/configurator"}
-                            className='flex w-full items-center justify-start gap-2'
-                          >
-                            <Icon name={"Wrench"} />
-                            Configurator
-                          </Link>
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  ) : (
-                    <></>
-                  )}
-
                   <Button
                     variant={"ghost-destructive"}
                     size={"icon"}
@@ -439,48 +400,6 @@ export default function Navbar() {
                           </Button>
                         ))}
 
-                        {!!config.showGuideButton && (
-                          <>
-                            <Button
-                              variant={"outline"}
-                              asChild
-                            >
-                              <Link
-                                prefetch={false}
-                                href={"/ngdi-internal/deploy"}
-                                className='flex w-full items-center justify-between gap-4'
-                                onClick={() => setOpen(false)}
-                              >
-                                <div className='flex items-center gap-4'>
-                                  <Icon
-                                    name={"Book"}
-                                    className='text-foreground'
-                                  />
-                                  Deploy Guide
-                                </div>
-                              </Link>
-                            </Button>
-                            <Button
-                              variant={"outline"}
-                              asChild
-                            >
-                              <Link
-                                prefetch={false}
-                                href={"/ngdi-internal/configurator"}
-                                className='flex w-full items-center justify-between gap-4'
-                                onClick={() => setOpen(false)}
-                              >
-                                <div className='flex items-center gap-4'>
-                                  <Icon
-                                    name={"Wrench"}
-                                    className='text-foreground'
-                                  />
-                                  Configurator
-                                </div>
-                              </Link>
-                            </Button>
-                          </>
-                        )}
                       </div>
 
                       {config.siteConfig.supports.length && (
