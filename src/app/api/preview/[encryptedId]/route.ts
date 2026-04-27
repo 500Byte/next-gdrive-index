@@ -1,5 +1,4 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { IS_DEV } from "~/constant";
 
 import { encryptionService, gdriveNoCache } from "~/lib/utils.server";
 
@@ -25,6 +24,15 @@ export async function GET(
   const isFull = sp.get("full") === "1";
   const origin = request.headers.get("Origin") ?? request.headers.get("Referer") ?? request.headers.get("Host") ?? null;
 
+  const isProduction = () => {
+    const env = (globalThis as any).env;
+    const domain = env?.NEXT_PUBLIC_DOMAIN ?? config.basePath;
+    if (!origin || !domain) return false;
+    const originHost = new URL(origin).hostname;
+    const appHost = new URL(domain).hostname;
+    return originHost === appHost;
+  };
+
   try {
     if (!origin) {
       throw new Error("[500] Invalid request", {
@@ -32,7 +40,7 @@ export async function GET(
       });
     }
 
-    if (!IS_DEV && !origin?.toLowerCase().includes(config.basePath.toLowerCase())) {
+    if (isProduction() && origin.toLowerCase() !== config.basePath.toLowerCase()) {
       throw new Error("[403] Unauthorized", {
         cause: "Request is not allowed",
       });
@@ -108,7 +116,8 @@ export async function GET(
   } catch (error) {
     const e = error as Error;
     const message = e.message.replace(/\[.*\]/, "").trim();
-    const status = /\[.*\]/.exec(e.message)?.[0].replace(/\[|\]/g, "").trim() ?? 500;
+    const statusMatch = /\[(\d{3})\]/.exec(e.message);
+    const status = statusMatch ? Number(statusMatch[1]) : 500;
 
     return NextResponse.json(
       {
@@ -117,7 +126,7 @@ export async function GET(
         cause: e.cause ?? "Unknown",
       },
       {
-        status: Number(status),
+        status: status,
       },
     );
   }

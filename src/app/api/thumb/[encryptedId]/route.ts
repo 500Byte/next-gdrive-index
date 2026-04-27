@@ -1,6 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { IS_DEV } from "~/constant";
 
 import { encryptionService } from "~/lib/utils.server";
 
@@ -16,12 +15,16 @@ type Props = {
 
 export async function GET(request: NextRequest, { params }: Props) {
   const { encryptedId } = await params;
+
   try {
     const searchParams = new URL(request.nextUrl).searchParams;
     const size = searchParams.get("size") ?? "512";
 
-    // Only allow if the request is from the same domain or the referer is the same domain
-    if (!IS_DEV && !request.headers.get("Referer")?.includes(config.basePath)) {
+    const env = (globalThis as any).env;
+    const domain = env?.NEXT_PUBLIC_DOMAIN ?? config.basePath;
+    const referer = request.headers.get("Referer") ?? "";
+
+    if (referer && !referer.includes(domain)) {
       throw new Error("Invalid request");
     }
 
