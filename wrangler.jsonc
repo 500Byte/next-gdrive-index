@@ -10,7 +10,7 @@
 	"vars": {
 		"NEXT_PUBLIC_DOMAIN": "next-gdrive-index.diegonr.workers.dev",
 		"SITE_PASSWORD": "",
-		"ROOT_FOLDER": "",
+		"ROOT_FOLDER": "b648fa96fa145c7b57b6a17747b8c53a462246a086b82a03839868f76186ccb6f5e3b31679f7f7bbbaaa905759edb7d0ad;642a6ee4a31826a127b332ca",
 		"SHARED_DRIVE": ""
 	},
 	"assets": {
