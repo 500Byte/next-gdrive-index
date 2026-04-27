@@ -1,195 +1,238 @@
 ![banner](/public/og.webp)
 
-> [!IMPORTANT]  
-> It is **RECOMMENDED** to generate configuration from your deployment instead of demo site  
-> If you experiencing `Failed to decrypt data` error, you should try to regenerate your configuration from your deployment instead
-
 <p align='center'>
 	<a href='https://drive-demo.mbaharip.com' target='_blank'>Demo Site</a>
 		·
-	<a href='https://drive-demo.mbaharip.com/ngdi-internal/deploy' target='_blank'>Deploy / Version Upgrade Guide</a>
+	<a href='https://drive-demo.mbaharip.com/ngdi-internal/deploy' target='_blank'>Deploy Guide</a>
 		·
-	<a href='#' target='_blank'>How to Deploy (Youtube)</a>
+	<a href='https://github.com/mbahArip/next-gdrive-index/wiki' target='_blank'>Documentation</a>
 </p>
+
 <p align='center'>
-	<img src='https://img.shields.io/github/package-json/v/mbaharip/next-gdrive-index?label=Production' alt='Demo version' />
-	<img src='https://img.shields.io/github/package-json/v/mbaharip/next-gdrive-index/v2?label=Preview' alt='Dev' />
+	<img src='https://img.shields.io/github/package-json/v/mbaharip/next-gdrive-index?label=Production' alt='Production version' />
+	<img src='https://img.shields.io/github/package-json/v/mbaharip/next-gdrive-index/v2?label=Preview' alt='Dev version' />
+	<img src='https://img.shields.io/github/license/mbaharip/next-gdrive-index' alt='License' />
+	<img src='https://img.shields.io/badge/Next.js-15-black' alt='Next.js 15' />
 </p>
 
-<!-- Generate TOC -->
+## Quick Start
 
-## Table of Contents
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/mbaharip/next-gdrive-index)
 
-- [What is this?](#what-is-this)
-- [Why I made this?](#why-i-made-this)
-- [Features](#features)
-- [Known Issues](#known-issues)
-  - [File size limit](#file-size-limit)
-  - [No support for Google Docs, Sheets, and Slides](#no-support-for-google-docs-sheets-and-slides)
-  - [No support for Shortcut](#no-support-for-shortcut)
-  - [Encryption cause error](#encryption-cause-error)
-  - [Can't seek on audio and video preview](#cant-seek-on-audio-and-video-preview)
-  - [Shared Drive is not supported](#shared-drive-is-not-supported)
-- [Might be Implemented](#might-be-implemented)
-  - [Internationalization / i18n](#internationalization--i18n)
-  - [Multiple drive](#multiple-drive)
-  - [Authentication](#authentication)
-- [Running on Local](#running-on-local)
-- [How to Contribute](#how-to-contribute)
-- [Support and Donations](#support-and-donations)
-- [License](#license)
+> [!IMPORTANT]
+> Generate your configuration from your own deployment, not the demo site.
+> If you experience `Failed to decrypt data` errors, regenerate your configuration.
 
 ## What is this?
 
-`next-gdrive-index` is a Google Drive directory index.
-The aim of this project is to simplify the process of sharing files using Google Drive, and also add some features that _I think_ is useful when sharing a files.
+`next-gdrive-index` is a modern Google Drive directory index that transforms your Google Drive into a browsable, searchable file sharing platform. It provides a clean, customizable interface for previewing and sharing files—images, videos, audio, documents, and even manga—without the clutter of Google Drive's native interface.
 
-This project are **HEAVILY INSPIRED** by [onedrive-vercel-index](https://github.com/spencerwooo/onedrive-vercel-index) by [SpencerWooo](https://github.com/spencerwooo).
-
-## Why I made this?
-
-> **TLDR;** \
-> It is cheaper to use Google Drive than other similar service
-
-There are a lot cloud storage service like Onedrive, Dropbox, Mega, etc.
-But, between all those service, I think Google Drive is a lot cheaper than others (at least in my region).
-
-Here are the pricing comparison between free and cheapest plan
-_Price are converted to IDR, since it's easier for me to compare this using my own currency_
-
-| Service          | Free plan       | Paid plan | Price                  | Price to Storage                            | Transfer Quota |
-| :--------------- | :-------------- | :-------- | :--------------------- | :------------------------------------------ | :------------: |
-| **Google Drive** | 15GB            | 2TB       | 135k IDR<br>~112k IDR  | <u>14.8GB / 1k / mo<br>17.8GB / 1k / yr</u> |  **<u>X</u>**  |
-| **Onedrive**\*\* | 5GB             | 1TB       | 96k IDR<br>80k IDR     | 10.4GB / 1k / mo<br>12.5GB / 1k / yr        |  **<u>X</u>**  |
-| **Dropbox**\*    | 2GB             | 2TB       | ~191k IDR<br>~159k IDR | 10.5GB / 1k / mo<br>12.5GB / 1k / yr        |       O        |
-| **MEGA**         | **<u>20GB</u>** | 2TB       | ~174k IDR<br>~145k IDR | 11.5GB / 1k / mo<br>13.8GB / 1k / yr        |       O        |
-
-> \* Price are in USD, and there are no regional price for IDR \
-> \*\* There are no 2TB plan
-
-By using this data, I picked Google Drive instead other service.
-I know there are a lot of people selling cheap education account especially for Google Drive and Onedrive, but most of the time <u>those account doesn't last long</u>.
+**Heavily inspired by** [onedrive-vercel-index](https://github.com/spencerwooo/onedrive-vercel-index) by [SpencerWooo](https://github.com/spencerwooo).
 
 ## Features
 
-- **Private Index**, protect the whole site with a password
-- **Folder and file protection**, protect certain path with a password
-- **Readme file**, add description (or whatever) inside a readme to be rendered when you open the folder
-- **File preview**, preview the file before download ( Preview file size limit can be adjusted )
-  - Image preview
-  - Video preview
-  - Audio preview
-  - Document preview
-  - Code / Text / Markdown preview
-  - Manga preview (cbz)
-- **Embed media**, embed media like video or audio to your site
-- **File search**, search by the file or folder name
-- **Direct download**, download directly via API route instead of google drive link ( Size limit can be adjusted )
-- **Raw file link**, embed your media files
-- **Light/Dark mode**, choose your side!
-- **Customizable Theme**, we are using `shadcn/ui` now! you can customize your site with the theme you like
-- **Links**, add social, or information link on the navbar
-- **Sponsors**, using this for thing for community? add a sponsor / donate button on your navbar!
+### Security & Access Control
+- **Private Index** — Protect the entire site with a password
+- **Path Protection** — Secure specific folders or files with individual passwords
+- **Encrypted Configuration** — Sensitive data stays secure
+
+### File Preview
+- **Images** — Direct preview with zoom support
+- **Video & Audio** — Stream media files with custom player
+- **Documents** — Preview PDF, code, markdown, and text files
+- **Manga/CBZ** — Dedicated manga reader with page navigation
+- **Configurable Limits** — Set maximum file sizes for preview and download
+
+### User Experience
+- **File Search** — Quick search by file or folder name
+- **Light/Dark Mode** — Theme toggle with system preference detection
+- **Responsive Design** — Works on desktop, tablet, and mobile
+- **Fast Navigation** — Breadcrumbs, sorting, and virtual scrolling for large directories
+
+### Customization
+- **Theme System** — Built on shadcn/ui, fully customizable with CSS variables
+- **Site Configuration** — Edit `gIndex.config.ts` to customize:
+  - Site name, description, and metadata
+  - Navigation items and social links
+  - File size limits and preview settings
+  - Footer content with template variables
+- **Embed Support** — Embed media directly into your site
+- **README Rendering** — Add `.readme.md` files to folders for context
+
+## Prerequisites
+
+Before deploying, you'll need:
+
+1. **Google Service Account**
+   - Create a service account in [Google Cloud Console](https://console.cloud.google.com)
+   - Download the JSON key file
+   - Share your target Google Drive folder with the service account email
+
+2. **Node.js 18+** (for local development)
+   - Check version: `node --version`
+
+3. **Vercel Account** (recommended for deployment)
+   - Or any Node.js hosting platform
+
+## Deployment
+
+### One-Click Deploy
+
+Click the Deploy button above, then:
+
+1. **Configure Environment Variables** in Vercel:
+   - `GD_SERVICE_B64` — Base64-encoded service account JSON
+   - `ENCRYPTION_KEY` — Secret key for encryption (generate a secure random string)
+   - `SITE_PASSWORD` — (Optional) Password for private mode
+
+2. **Generate Configuration**:
+   - Visit `/ngdi-internal/deploy` on your deployed site
+   - Use the configurator to generate your `gIndex.config.ts`
+   - Download and place in `src/config/`
+
+### Manual Deployment
+
+```bash
+# Clone the repository
+git clone https://github.com/mbaharip/next-gdrive-index.git
+cd next-gdrive-index
+
+# Install dependencies
+npm install
+
+# Add environment variables
+cp .env.example .env
+# Edit .env with your credentials
+
+# Configure the application
+# Edit src/config/gIndex.config.ts
+
+# Build and start
+npm run build
+npm run start
+```
+
+## Configuration
+
+### Environment Variables (`.env`)
+
+```bash
+# Base64-encoded service account JSON
+GD_SERVICE_B64=
+
+# Secret key for encryption (32+ random characters)
+ENCRYPTION_KEY=
+
+# Site password (optional, for private mode)
+SITE_PASSWORD=
+
+# Domain (optional, without protocol)
+# NEXT_PUBLIC_DOMAIN=yourdomain.com
+```
+
+### Application Config (`gIndex.config.ts`)
+
+Key configuration options:
+
+| Option | Description | Default |
+|--------|-------------|---------|
+| `siteConfig.siteName` | Site display name | `next-gdrive-index` |
+| `apiConfig.rootFolder` | Encrypted root folder ID | - |
+| `apiConfig.isTeamDrive` | Enable for Shared Drives | `false` |
+| `apiConfig.streamMaxSize` | Max preview file size (bytes) | `100MB` |
+| `apiConfig.maxFileSize` | Max download via API (bytes) | `4MB` |
+| `siteConfig.privateIndex` | Enable site-wide password | `false` |
+| `siteConfig.showFileExtension` | Show file extensions | `true` |
+
+See the [full configuration guide](https://drive-demo.mbaharip.com/ngdi-internal/deploy) for all options.
+
+## Development
+
+```bash
+# Install dependencies
+npm install
+
+# Start development server (with Turbopack)
+npm run dev:turbo
+
+# Or standard development server
+npm run dev
+
+# Visit http://localhost:3000
+```
+
+### Available Scripts
+
+| Script | Description |
+|--------|-------------|
+| `npm run dev` | Start development server |
+| `npm run dev:turbo` | Start with Turbopack (faster) |
+| `npm run build` | Build for production |
+| `npm run start` | Start production server |
+| `npm run lint` | Run ESLint |
+| `npm run format` | Format code with Prettier |
+| `npm run cli` | Run configuration CLI |
+
+## Tech Stack
+
+- **Framework:** [Next.js 15](https://nextjs.org/) (App Router)
+- **UI Components:** [shadcn/ui](https://ui.shadcn.com/) + [Radix UI](https://www.radix-ui.com/)
+- **Styling:** [Tailwind CSS](https://tailwindcss.com/)
+- **Media Playback:** [Vidstack](https://www.vidstack.io/)
+- **Icons:** [Lucide React](https://lucide.dev/)
+- **Theming:** [next-themes](https://github.com/pacocoursey/next-themes)
+- **Form Handling:** [React Hook Form](https://react-hook-form.com/) + [Zod](https://zod.dev/)
+- **Virtualization:** [@tanstack/react-virtual](https://tanstack.com/virtual)
 
 ## Known Issues
 
-### File size limit
+### File Size Limit & Direct Download
 
-> [!IMPORTANT]
-> This only apply if `maxFileSize` is enabled / more than 0
-
-You need to set the file sharing permission to `Anyone with the link can view` on the root folder.
-
-**Why?**
-The download link will be redirected if the file you're trying to download is bigger than the `maxFileSize`, and most of platform are limiting the response body size (ex: Vercel limit is 4MB).
-If you don't set the permission, people can't access or download the file.
+When `maxFileSize` is enabled, large file downloads redirect to Google Drive. You must set file sharing to `Anyone with the link can view` on the root folder.
 
 > [!WARNING]
-> This will **expose the file ID**
-> While they can view the file directly from Google Drive, they can't see or browse the folder that contains the file from Google Drive.
+> This exposes the file ID in URLs. While users can view files directly on Google Drive, they cannot browse the folder structure.
 
-### No support for Google Docs, Sheets, and Slides
+### Limited Format Support
 
-For now, I don't have any plan to implement this, because I think it's not necessary.
+- **Google Docs/Sheets/Slides** — Not supported (use export or alternative methods)
+- **Shortcuts** — Not currently supported
+- **TS Video Files** — Incorrect MIME type detection prevents preview
 
-### No support for Shortcut
+## Roadmap
 
-While I think it's important, I don't have any plan to implement this for now.
+- [ ] **Internationalization (i18n)** — Multi-language support for UI and docs
+- [ ] **Multiple Drives** — Support multiple Google accounts or root folders
+- [ ] **Authentication System** — User-based access for subscribers/members
+- [ ] **Google Workspace Shortcuts** — Support for Drive shortcuts
 
-### TS video file doesn't recognized
+## Contributing
 
-Somehow google return the mime type as code instead of video. I don't know how to fix this, so for now you can't preview the TS video file.
+Contributions are welcome! Here's how to get started:
 
-### ~~Encryption cause error~~
+1. Check [open issues](https://github.com/mbaharip/next-gdrive-index/issues) for bugs or feature requests
+2. Fork the repository and create a feature branch from the latest version branch (not `main`)
+3. Implement your changes with clear, concise commits
+4. Submit a Pull Request with a description of your changes
 
-~~It seems the configurator are generating wrong encrypted folder ID, so it will cause error when you try to access the folder.~~
-Should be fixed on v2.0.4, waiting for feedback / confirmation
+Please ensure your code passes linting (`npm run lint`) and formatting checks (`npm run format:check`).
 
-### ~~Can't seek on audio and video preview~~
+## Support & Donations
 
-~~It looks like you can't seek the audio and video preview, so you need to listen / watch from the beginning.~~
-Fixed on v2.0.2
+If you find this project useful, consider supporting its development:
 
-### ~~Shared Drive is not supported~~
-
-~~I don't have Shared Drive, so I can't test it and implement it~~
-Implemented by [@loadingthedev](https://github.com/loadingthedev) [(PR #4)](https://github.com/mbahArip/next-gdrive-index/pull/4)
-
-## Might be Implemented
-
-Here are things that I want, and might be implemented on the future
-
-### Internationalization / i18n
-
-It should be a good idea to have the site and deploying guide with multiple language support.
-
-### Multiple drive
-
-It's either from multiple Google Drive account with multiple Service Account, or a basic single Google Drive account with multiple root start point either in their own Drive or Shared Drive
-
-### Authentication
-
-Probably a good feature if you are a content creator that only want the one who subscribed to you get the files.
-It might need a database, but idk if I can implement it without the need of database
-
-## Running on Local
-
-- **Clone the repository**
-  `git clone https://github.com/mbaharip/next-gdrive-index.git`
-  `cd next-gdrive-index`
-- **Install required dependencies**
-  `npm install`
-  `yarn install`
-- **Add environment file**
-  - **Using Configuration**
-    - Open [Deploy guide page](https://drive-demo.mbaharip.com/deploy#config)
-    - Scroll to the bottom to see the configuration form
-    - Fill out the form and download the file
-    - Extract the `.env` file to the root folder
-  - **Using example file**
-    - `cp .env.example .env`
-    - Fill out everything
-- Run the app
-  `npm run dev`
-  `yarn dev`
-- Check the app on `http://localhost:3000`
-
-## How to Contribute
-
-Want to add new feature or improve the existing one? or you find a bug and fixed it yourself?
-
-- Please check the issue tab first to see if someone already reporting a bug, or if you want to check any new feature / enhancement that not yet implemented
-- Use code base from the latest version branch instead of the `main`, since it was made for development on current version
-- Create a Pull Request, and wait for me checking your code
-
-## Support and Donations
-
-If you think I deserve it, you can support me by:
-
-- [Paypal (USD)](https://paypal.me/mbaharip)
+- [PayPal (USD)](https://paypal.me/mbaharip)
 - [Ko-fi (USD)](https://ko-fi.com/mbaharip)
 - [Saweria (IDR)](https://saweria.co/mbaharip)
 
 ## License
 
-This project is licensed under the AGPL-3.0 License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the **AGPL-3.0 License** — see the [LICENSE](LICENSE) file for details.
+
+---
+
+<p align="center">
+  Made with ❤️ by <a href="https://github.com/mbaharip">mbaharip</a>
+  ·
+  <a href="https://github.com/mbaharip/next-gdrive-index">View on GitHub</a>
+</p>
