@@ -1,5 +1,5 @@
 import { decodeBase64, decodeBase64url, encodeBase64, encodeBase64url } from "@oslojs/encoding";
-import { SignJWT } from "jose";
+import { SignJWT, importPKCS8 } from "jose";
 import "server-only";
 
 import { Schema_ServiceAccount } from "~/types/schema";
@@ -121,7 +121,17 @@ class GoogleDriveEdgeClient {
     const decodedB64 = base64Decode<string>(serviceB64);
     if (!decodedB64) throw new Error("Failed to decode GD_SERVICE_B64");
     
-    const parsedAuth = Schema_ServiceAccount.safeParse(JSON.parse(decodedB64));
+    let json: unknown = JSON.parse(decodedB64);
+    
+    if (json && typeof json === 'object' && 'private_key' in json) {
+      const jsonObj = json as Record<string, unknown>;
+      const pk = jsonObj.private_key;
+      if (typeof pk === 'string') {
+        jsonObj.private_key = pk.replace(/\\n/g, '\n');
+      }
+    }
+    
+    const parsedAuth = Schema_ServiceAccount.safeParse(json);
     if (!parsedAuth.success) throw new Error("Failed to parse service account");
     
     this.serviceAccount = parsedAuth.data;
@@ -134,7 +144,8 @@ class GoogleDriveEdgeClient {
 
     const now = Math.floor(Date.now() / 1000);
     
-    const privateKey = await this.importPrivateKey(this.serviceAccount.private_key);
+    const normalizedPk = this.serviceAccount.private_key.replace(/\\n/g, "\n");
+    const privateKey = await importPKCS8(normalizedPk, "RS256");
     
     const jwt = await new SignJWT({
       iss: this.serviceAccount.client_email,
@@ -167,25 +178,6 @@ class GoogleDriveEdgeClient {
     this.tokenExpiry = Date.now() + (tokenData.expires_in * 1000);
     
     return this.accessToken;
-  }
-
-  private async importPrivateKey(pem: string): Promise<CryptoKey> {
-    const pemHeader = "-----BEGIN PRIVATE KEY-----";
-    const pemFooter = "-----END PRIVATE KEY-----";
-    const pemContents = pem
-      .replace(pemHeader, "")
-      .replace(pemFooter, "")
-      .replace(/\s/g, "");
-    
-    const binaryDer = Uint8Array.from(atob(pemContents), c => c.charCodeAt(0));
-    
-    return await crypto.subtle.importKey(
-      "pkcs8",
-      binaryDer.buffer,
-      { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" },
-      false,
-      ["sign"]
-    );
   }
 
   async listFiles(options: {
@@ -366,17 +358,34 @@ export const base64Decode = <T = unknown>(encoded: string, type: B64Type = "url"
   }
 };
 
-const driveClient = new GoogleDriveEdgeClient();
+let driveClientInstance: GoogleDriveEdgeClient | null = null;
+function getDriveClient(): GoogleDriveEdgeClient {
+  if (!driveClientInstance) {
+    driveClientInstance = new GoogleDriveEdgeClient();
+  }
+  return driveClientInstance;
+}
 
-export const encryptionService = new EncryptionService();
+let encryptionServiceInstance: EncryptionService | null = null;
+function getEncryptionService(): EncryptionService {
+  if (!encryptionServiceInstance) {
+    encryptionServiceInstance = new EncryptionService();
+  }
+  return encryptionServiceInstance;
+}
+
+export const encryptionService = {
+  encrypt: (data: string, forceKey?: string) => getEncryptionService().encrypt(data, forceKey),
+  decrypt: (hash: string, forceKey?: string) => getEncryptionService().decrypt(hash, forceKey),
+};
 
 export const gdrive = {
   files: {
-    list: (options: any) => driveClient.listFiles(options),
-    get: (fileId: string, options?: any) => driveClient.getFile(fileId, options),
-    getContent: (fileId: string, options?: any) => driveClient.getFileContent(fileId, options),
-    getStream: (fileId: string, options?: any) => driveClient.getFileStream(fileId, options),
-    getShortcutDetails: (fileId: string) => driveClient.getShortcutDetails(fileId),
+    list: (options: any) => getDriveClient().listFiles(options),
+    get: (fileId: string, options?: any) => getDriveClient().getFile(fileId, options),
+    getContent: (fileId: string, options?: any) => getDriveClient().getFileContent(fileId, options),
+    getStream: (fileId: string, options?: any) => getDriveClient().getFileStream(fileId, options),
+    getShortcutDetails: (fileId: string) => getDriveClient().getShortcutDetails(fileId),
   }
 };
 
