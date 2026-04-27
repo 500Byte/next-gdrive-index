@@ -4,38 +4,30 @@ import { BASE_URL, IS_DEV } from "~/constant";
 import { type Schema_Config } from "~/types/schema";
 
 // Load site config from JSON file (public, non-sensitive config)
-// In development, read from filesystem. In production, import bundled file.
+// In production/Cloudflare Workers, site.config.json is bundled via the build system
+// In development, we use a global variable or import
 let siteConfig: Record<string, any> = {};
 
-// Helper to safely use require
-const safeRequire = (id: string): any => {
-  if (typeof require !== "undefined") {
-    try {
-      return require(id);
-    } catch {
-      return undefined;
-    }
-  }
-  return undefined;
-};
-
 if (IS_DEV) {
+  // Development: try to load from global (injected by build system) or use empty
   try {
-    const fs = safeRequire("fs") as { readFileSync: (path: string, encoding: string) => string };
-    const path = safeRequire("path") as { join: (...args: string[]) => string };
-    if (fs && path) {
-      const configPath = path.join(process.cwd(), "site.config.json");
-      const raw = fs.readFileSync(configPath, "utf-8");
-      siteConfig = JSON.parse(raw) as Record<string, any>;
+    if (typeof window !== "undefined" && (window as any).__SITE_CONFIG__) {
+      siteConfig = (window as any).__SITE_CONFIG__;
+    } else if (typeof require !== "undefined") {
+      // Node.js environment
+      siteConfig = require("../../site.config.json") as Record<string, any>;
     }
   } catch {
     siteConfig = {};
   }
 } else {
   // Production/Cloudflare Workers - site.config.json is bundled
-  const imported = safeRequire("../../site.config.json") as Record<string, any>;
-  if (imported) {
-    siteConfig = imported;
+  try {
+    if (typeof require !== "undefined") {
+      siteConfig = require("../../site.config.json") as Record<string, any>;
+    }
+  } catch {
+    siteConfig = {};
   }
 }
 

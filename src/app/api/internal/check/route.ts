@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 import { encryptionService } from "~/lib/utils.server";
 
-import config from "~/config/gIndex.config";
+import config from "config";
 
 export const dynamic = "force-dynamic";
 

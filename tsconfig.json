@@ -25,7 +25,7 @@
     "paths": {
       "~/*": ["./src/*"],
       "actions": ["src/app/actions.ts"],
-      "config": ["./src/config/gIndex.config.ts"]
+      "config": ["./src/config/index.ts"]
     }
   },
   "include": [
