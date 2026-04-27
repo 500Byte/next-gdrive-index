@@ -11,7 +11,7 @@
     "lint:fix": "next lint --fix",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json}\" --cache",
     "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json}\" --cache",
-    "cli": "node ./scripts/cli.mjs"
+    "setup": "node ./scripts/setup.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
@@ -95,6 +95,7 @@
     "encoding": "^0.1.13",
     "eslint": "^8.57.0",
     "eslint-config-next": "^15.0.1",
+    "open": "^10.1.0",
     "ora": "^8.2.0",
     "postcss": "^8.4.38",
     "prettier": "3.0.0",
