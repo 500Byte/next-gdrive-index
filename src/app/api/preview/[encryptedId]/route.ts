@@ -32,7 +32,6 @@ export async function GET(
       });
     }
 
-    // // Only allow if the request is from the same domain or the referer is the same domain
     if (!IS_DEV && !origin?.toLowerCase().includes(config.basePath.toLowerCase())) {
       throw new Error("[403] Unauthorized", {
         cause: "Request is not allowed",
@@ -76,29 +75,34 @@ export async function GET(
       }
     }
 
-    const content = await gdriveNoCache.files.get(
-      {
-        fileId: decryptedId,
-        alt: "media",
-        supportsAllDrives: config.apiConfig.isTeamDrive,
-        acknowledgeAbuse: true,
-      },
-      {
-        responseType: "stream",
-        headers: {
-          "Accept-Ranges": "bytes",
-          "Range": `bytes=${rangeStart}-${rangeEnd}`,
-        },
-      },
-    );
+    const driveResponse = await gdriveNoCache.files.getStream(decryptedId, {
+      supportsAllDrives: config.apiConfig.isTeamDrive,
+      acknowledgeAbuse: true,
+      range: `bytes=${rangeStart}-${rangeEnd}`,
+    });
 
-    const headers = new Headers(content.headers);
+    const headers = new Headers();
+    
+    // Copy relevant headers from Drive response
+    if (driveResponse.headers.get("Content-Type")) {
+      headers.set("Content-Type", driveResponse.headers.get("Content-Type")!);
+    }
+    if (driveResponse.headers.get("Content-Range")) {
+      headers.set("Content-Range", driveResponse.headers.get("Content-Range")!);
+    }
+    if (driveResponse.headers.get("Accept-Ranges")) {
+      headers.set("Accept-Ranges", driveResponse.headers.get("Accept-Ranges")!);
+    }
+    if (driveResponse.headers.get("Content-Length")) {
+      headers.set("Content-Length", driveResponse.headers.get("Content-Length")!);
+    }
+    
     if (isInline) {
       headers.set("Content-Disposition", `inline; filename="${file.data.name}"`);
     }
 
-    return new NextResponse(content.data as unknown as BodyInit, {
-      status: isFullyLoaded ? 200 : content.status,
+    return new NextResponse(driveResponse.body, {
+      status: isFullyLoaded ? 200 : 206,
       headers: headers,
     });
   } catch (error) {

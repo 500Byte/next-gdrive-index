@@ -2,7 +2,7 @@ import { type NextRequest, NextResponse } from "next/server";
 
 import { encryptionService, gdrive } from "~/lib/utils.server";
 
-import config from "config";
+import config from "~/config/gIndex.config";
 
 export const dynamic = "force-dynamic";
 
@@ -17,8 +17,7 @@ export async function GET(request: NextRequest, { params }: Props) {
 
   try {
     const decryptedId = await encryptionService.decrypt(encryptedId);
-    const { data } = await gdrive.files.get({
-      fileId: decryptedId,
+    const data = await gdrive.files.get(decryptedId, {
       fields: "id, name, mimeType, webContentLink",
       supportsAllDrives: config.apiConfig.isTeamDrive,
     });
@@ -27,13 +26,13 @@ export async function GET(request: NextRequest, { params }: Props) {
       cache: "force-cache",
     });
     const buffer = await downloadThumb.arrayBuffer();
-    const bufferData = Buffer.from(buffer);
+    const uint8Array = new Uint8Array(buffer);
 
-    return new NextResponse(bufferData, {
+    return new NextResponse(uint8Array, {
       headers: {
         "Cache-Control": "public, max-age=31536000, immutable",
         "Content-Type": data.mimeType ?? "application/octet-stream",
-        "Content-Length": bufferData.length.toString(),
+        "Content-Length": uint8Array.length.toString(),
         "Content-Disposition": `inline; filename="${data.name}"`,
       },
     });

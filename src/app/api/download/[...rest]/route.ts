@@ -1,7 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
 
-
-
 import { encryptionService, gdrive } from "~/lib/utils.server";
 
 import { GetFile } from "~/actions/files";
@@ -11,7 +9,7 @@ import { ValidateFileToken } from "~/actions/token";
 
 import config from "config";
 
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ rest: string[] }> }) {
   const { rest } = await params;
@@ -95,56 +93,26 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       });
     }
 
-    const content = await gdrive.files.get(
-      {
-        fileId: await encryptionService.decrypt(file.data.encryptedId),
-        alt: "media",
-        supportsAllDrives: config.apiConfig.isTeamDrive,
-        acknowledgeAbuse: true,
-      },
-      {
-        responseType: "stream",
-      },
-    );
-    // const fileBuffer = await new Promise<Buffer>((res, rej) => {
-    //   const chunks: Buffer<ArrayBufferLike>[] = [];
-    //   content.data.on("data", (chunk) => {
-    //     chunks.push(Buffer.from(chunk as ArrayBufferLike));
-    //   });
-    //   content.data.on("end", () => {
-    //     res(Buffer.concat(chunks));
-    //   });
-    //   content.data.on("error", (err) => {
-    //     rej(err);
-    //   });
-    // });
-    const nodeStream = content.data as NodeJS.ReadableStream;
-    const webStream = new ReadableStream({
-      async start(controller) {
-        for await (const chunk of nodeStream) {
-          controller.enqueue(chunk);
-        }
-        controller.close();
-      },
+    const decryptedId = await encryptionService.decrypt(file.data.encryptedId);
+    
+    const driveResponse = await gdrive.files.getStream(decryptedId, {
+      supportsAllDrives: config.apiConfig.isTeamDrive,
+      acknowledgeAbuse: true,
     });
 
-    return new NextResponse(webStream, {
+    const responseHeaders = new Headers();
+    responseHeaders.set("Content-Type", file.data.mimeType || "application/octet-stream");
+    responseHeaders.set("Content-Disposition", `attachment; filename="${file.data.name}"`);
+    responseHeaders.set("Cache-Control", config.cacheControl);
+    
+    if (driveResponse.headers.get("Content-Length")) {
+      responseHeaders.set("Content-Length", driveResponse.headers.get("Content-Length")!);
+    }
+
+    return new NextResponse(driveResponse.body, {
       status: 200,
-      headers: {
-        "Content-Type": file.data.mimeType,
-        "Content-Disposition": `attachment; filename="${file.data.name}"`,
-        "Cache-Control": config.cacheControl,
-      },
+      headers: responseHeaders,
     });
-    // return new NextResponse(fileBuffer, {
-    //   status: 200,
-    //   headers: {
-    //     "Content-Type": file.data.mimeType,
-    //     "Content-Length": fileBuffer.length.toString(),
-    //     "Content-Disposition": `attachment; filename="${file.data.name}"`,
-    //     "Cache-Control": config.cacheControl,
-    //   },
-    // });
   } catch (error) {
     const e = error as Error;
     const message = e.message.replace(/\[.*\]/, "").trim();
