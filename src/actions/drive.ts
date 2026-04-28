@@ -787,7 +787,17 @@ export async function ValidateFileToken(
   }
 
   const decryptedToken = await encryptionService.decrypt(validationResult.data);
-  const parsedToken = Schema_FileToken.safeParse(JSON.parse(decryptedToken));
+
+  let parsedToken;
+  try {
+    parsedToken = Schema_FileToken.safeParse(JSON.parse(decryptedToken));
+  } catch (e) {
+    return {
+      success: false,
+      message: "Failed to validate token",
+      error: "Invalid token format",
+    };
+  }
 
   if (!parsedToken.success)
     return {
