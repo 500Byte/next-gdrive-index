@@ -119,7 +119,7 @@ class GoogleDriveEdgeClient {
     const serviceB64 = getEnvVar("GD_SERVICE_B64");
     if (!serviceB64) throw new Error("GD_SERVICE_B64 environment variable is required");
     
-    const decodedB64 = base64Decode<string>(serviceB64);
+    const decodedB64 = base64Decode<string>(serviceB64, "standard");
     if (!decodedB64) throw new Error("Failed to decode GD_SERVICE_B64");
     
     const json: unknown = JSON.parse(decodedB64);
@@ -138,7 +138,7 @@ class GoogleDriveEdgeClient {
     this.serviceAccount = parsedAuth.data;
   }
 
-  private async getAccessToken(): Promise<string> {
+  public async getAccessToken(): Promise<string> {
     if (this.accessToken && Date.now() < this.tokenExpiry - 60000) {
       return this.accessToken;
     }
