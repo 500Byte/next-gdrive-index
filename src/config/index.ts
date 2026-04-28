@@ -32,7 +32,7 @@ if (IS_DEV) {
 }
 
 // Get environment variable helper for Cloudflare Workers
-function getEnvVar(name: string): string | undefined {
+export function getEnvVar(name: string): string | undefined {
   if (typeof process !== "undefined" && process.env && process.env[name]) {
     return process.env[name];
   }

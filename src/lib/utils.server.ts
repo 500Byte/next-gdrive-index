@@ -3,6 +3,7 @@ import { decodeBase64, decodeBase64url, encodeBase64, encodeBase64url } from "@o
 import { SignJWT, importPKCS8 } from "jose";
 import "server-only";
 
+import { getEnvVar } from "~/config";
 import { Schema_ServiceAccount } from "~/types/schema";
 
 function uint8ArrayToHex(arr: Uint8Array): string {
@@ -304,23 +305,6 @@ class GoogleDriveEdgeClient {
 
     return await response.json();
   }
-}
-
-function getEnvVar(name: string): string | undefined {
-  // For Cloudflare Workers, check both process.env and globalThis
-  if (typeof process !== "undefined" && process.env && process.env[name]) {
-    return process.env[name];
-  }
-  // Try to get from globalThis (Cloudflare Workers bindings)
-  const env = (globalThis as any).env;
-  if (env && env[name]) {
-    return env[name];
-  }
-  // Try to get from globalThis directly
-  if ((globalThis as any)[name]) {
-    return (globalThis as any)[name];
-  }
-  return undefined;
 }
 
 type B64Type = "url" | "standard";
