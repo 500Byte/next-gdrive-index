@@ -391,3 +391,5 @@ export const gdrive = {
 };
 
 export const gdriveNoCache = gdrive;
+
+export { EncryptionService, GoogleDriveEdgeClient };
