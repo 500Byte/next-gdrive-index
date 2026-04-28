@@ -109,10 +109,11 @@ export async function GET(
       headers.set("Content-Disposition", `inline; filename="${file.data.name}"`);
     }
 
-    // Return the drive response directly
-    // Note: Using the Response constructor with the original ReadableStream
-    // This works better with Cloudflare Workers than piping through TransformStream
-    return new Response(driveResponse.body, {
+    // For Cloudflare Workers with OpenNext, we need to consume the stream
+    // and return it as a new Response to avoid streaming issues
+    const arrayBuffer = await driveResponse.arrayBuffer();
+    
+    return new Response(arrayBuffer, {
       status: isFullyLoaded ? 200 : 206,
       headers: headers,
     });
