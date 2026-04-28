@@ -1,6 +1,5 @@
 "use client";
 
-import { useTheme } from "next-themes";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -39,9 +38,13 @@ import { ClearSavedPasswords } from "~/actions/password";
 
 import config from "config";
 
+import { useTheme } from "~/components/layout/Provider";
+
+const themeOptions = ["light", "dark"];
+
 export default function Navbar() {
   const pathname = usePathname();
-  const { theme, themes, setTheme } = useTheme();
+  const { theme, toggleTheme } = useTheme();
   const { isDesktop } = useResponsive();
   const isLoading = useLoading();
   const confirm = useConfirmDialog();
@@ -62,6 +65,16 @@ export default function Navbar() {
     if (!clear.success) return toast.error(clear.error, { id: "clear-password" });
     toast.success(clear.message, { id: "clear-password" });
   }
+
+  const setTheme = (newTheme: string) => {
+    if (newTheme === "dark") {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  };
 
   if (NO_LAYOUT_PATHS.some((path) => new RegExp(path).test(pathname))) return null;
 
@@ -124,9 +137,9 @@ export default function Navbar() {
                             )}
                           >
                             <Icon
-                              name={item.icon}
-                              size={"1.25rem"}
-                            />
+                                name={item.icon}
+                                size={"1.25rem"}
+                              />
                           </Link>
                         </Button>
                       </TooltipTrigger>
@@ -175,7 +188,7 @@ export default function Navbar() {
                       </TooltipContent>
                     </Tooltip>
                     <DropdownMenuContent>
-                      {themes.map((item) => (
+                      {themeOptions.map((item) => (
                         <DropdownMenuItem
                           key={item}
                           disabled={item === theme}
@@ -188,8 +201,6 @@ export default function Navbar() {
                               name={
                                 item === theme
                                   ? "Check"
-                                  : item === "system"
-                                  ? "LaptopMinimal"
                                   : item === "light"
                                   ? "Sun"
                                   : "Moon"
@@ -302,7 +313,7 @@ export default function Navbar() {
                       </DrawerHeader>
 
                       <div className='grid gap-2 px-4'>
-                        {themes.map((item) => (
+                        {themeOptions.map((item) => (
                           <Button
                             key={item}
                             variant={theme === item ? "secondary" : "outline"}
@@ -319,8 +330,6 @@ export default function Navbar() {
                                 name={
                                   item === theme
                                     ? "Check"
-                                    : item === "system"
-                                    ? "LaptopMinimal"
                                     : item === "light"
                                     ? "Sun"
                                     : "Moon"
