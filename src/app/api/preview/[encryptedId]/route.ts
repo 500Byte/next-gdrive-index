@@ -109,7 +109,7 @@ export async function GET(
       headers.set("Content-Disposition", `inline; filename="${file.data.name}"`);
     }
 
-    return new NextResponse(driveResponse.body, {
+    return new Response(driveResponse.body, {
       status: isFullyLoaded ? 200 : 206,
       headers: headers,
     });
