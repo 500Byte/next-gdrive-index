@@ -1,6 +1,5 @@
 import { Slot } from "@radix-ui/react-slot";
 import { type VariantProps, cva } from "class-variance-authority";
-import { motion } from "framer-motion";
 import * as React from "react";
 
 import { cn } from "~/lib/utils";
@@ -77,41 +76,26 @@ const LoadingButton = React.forwardRef<HTMLButtonElement, LoadingButtonProps>(
         disabled={disabled ? true : loading}
         {...props}
       >
-        <motion.div
-          initial={{
-            opacity: 0,
-            y: 40,
-          }}
-          animate={{ opacity: loading ? 1 : 0, y: loading ? 0 : 40 }}
-          transition={{
-            duration: 0.3,
-            ease: "easeInOut",
-          }}
-          className='absolute'
+        <div
+          className={cn(
+            "absolute inset-0 flex items-center justify-center transition-all duration-300 ease-in-out",
+            loading ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+          )}
         >
           <Icon
             name='LoaderCircle'
             className='animate-spin'
           />
-        </motion.div>
+        </div>
 
-        <motion.div
-          initial={{
-            opacity: 1,
-            y: 0,
-          }}
-          animate={{
-            opacity: loading ? 0 : 1,
-            y: loading ? -40 : 0,
-          }}
-          transition={{
-            duration: 0.3,
-            ease: "easeInOut",
-          }}
-          className={cn("relative inline-flex items-center justify-center gap-2", className)}
+        <div
+          className={cn(
+            "transition-all duration-300 ease-in-out inline-flex items-center justify-center gap-2",
+            loading ? "opacity-0 -translate-y-10" : "opacity-100 translate-y-0"
+          )}
         >
           {children}
-        </motion.div>
+        </div>
       </Comp>
     );
   },
