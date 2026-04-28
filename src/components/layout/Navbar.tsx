@@ -399,7 +399,6 @@ export default function Navbar() {
                             </Link>
                           </Button>
                         ))}
-
                       </div>
 
                       {config.siteConfig.supports.length && (

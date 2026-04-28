@@ -1,4 +1,5 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
 import { GoogleDriveEdgeClient } from "~/lib/utils.server";
 
 const TEST_PRIVATE_KEY = `-----BEGIN PRIVATE KEY-----
@@ -64,10 +65,11 @@ describe("GoogleDriveEdgeClient", () => {
     it("should fetch and cache access token", async () => {
       (global.fetch as any).mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve({
-          access_token: "test-token-123",
-          expires_in: 3600,
-        }),
+        json: () =>
+          Promise.resolve({
+            access_token: "test-token-123",
+            expires_in: 3600,
+          }),
       });
 
       const token = await client.getAccessToken();
@@ -78,17 +80,18 @@ describe("GoogleDriveEdgeClient", () => {
         expect.objectContaining({
           method: "POST",
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        })
+        }),
       );
     });
 
     it("should return cached token if not expired", async () => {
       (global.fetch as any).mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve({
-          access_token: "cached-token",
-          expires_in: 3600,
-        }),
+        json: () =>
+          Promise.resolve({
+            access_token: "cached-token",
+            expires_in: 3600,
+          }),
       });
 
       const token1 = await client.getAccessToken();

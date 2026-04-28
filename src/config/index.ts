@@ -62,8 +62,13 @@ const config: z.input<typeof Schema_Config> = {
     sharedDrive: getEnvVar("SHARED_DRIVE") ?? siteConfig.apiConfig?.sharedDrive ?? "",
 
     // From site.config.json (non-sensitive)
-    defaultQuery: siteConfig.apiConfig?.defaultQuery ?? ["trashed = false", "(not mimeType contains 'google-apps' or mimeType contains 'folder')"],
-    defaultField: siteConfig.apiConfig?.defaultField ?? "id, name, mimeType, thumbnailLink, fileExtension, modifiedTime, size, imageMediaMetadata, videoMediaMetadata, webContentLink, trashed",
+    defaultQuery: siteConfig.apiConfig?.defaultQuery ?? [
+      "trashed = false",
+      "(not mimeType contains 'google-apps' or mimeType contains 'folder')",
+    ],
+    defaultField:
+      siteConfig.apiConfig?.defaultField ??
+      "id, name, mimeType, thumbnailLink, fileExtension, modifiedTime, size, imageMediaMetadata, videoMediaMetadata, webContentLink, trashed",
     defaultOrder: siteConfig.apiConfig?.defaultOrder ?? "folder, name asc, modifiedTime desc",
     itemsPerPage: siteConfig.apiConfig?.itemsPerPage ?? 50,
     searchResult: siteConfig.apiConfig?.searchResult ?? 5,
@@ -74,7 +79,14 @@ const config: z.input<typeof Schema_Config> = {
       readme: ".readme.md",
       banner: ".banner",
     },
-    hiddenFiles: siteConfig.apiConfig?.hiddenFiles ?? [".password", ".readme.md", ".banner", ".banner.jpg", ".banner.png", ".banner.webp"],
+    hiddenFiles: siteConfig.apiConfig?.hiddenFiles ?? [
+      ".password",
+      ".readme.md",
+      ".banner",
+      ".banner.jpg",
+      ".banner.png",
+      ".banner.webp",
+    ],
     allowDownloadProtectedFile: siteConfig.apiConfig?.allowDownloadProtectedFile ?? false,
     temporaryTokenDuration: siteConfig.apiConfig?.temporaryTokenDuration ?? 1,
     maxFileSize: siteConfig.apiConfig?.maxFileSize ?? 4 * 1024 * 1024,

@@ -2,12 +2,12 @@ import { type NextRequest, NextResponse } from "next/server";
 
 import { encryptionService, gdrive } from "~/lib/utils.server";
 
-import { GetFile, ValidatePaths, ValidateFileToken } from "~/actions/drive";
+import { GetFile, ValidateFileToken, ValidatePaths } from "~/actions/drive";
 import { CheckIndexPassword, CheckPagePassword } from "~/actions/password";
 
 import config from "config";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ rest: string[] }> }) {
   const { rest } = await params;
@@ -92,7 +92,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     }
 
     const decryptedId = await encryptionService.decrypt(file.data.encryptedId);
-    
+
     const driveResponse = await gdrive.files.getStream(decryptedId, {
       supportsAllDrives: config.apiConfig.isTeamDrive,
       acknowledgeAbuse: true,
@@ -102,7 +102,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     responseHeaders.set("Content-Type", file.data.mimeType || "application/octet-stream");
     responseHeaders.set("Content-Disposition", `attachment; filename="${file.data.name}"`);
     responseHeaders.set("Cache-Control", config.cacheControl);
-    
+
     if (driveResponse.headers.get("Content-Length")) {
       responseHeaders.set("Content-Length", driveResponse.headers.get("Content-Length")!);
     }

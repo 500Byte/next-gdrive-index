@@ -90,7 +90,7 @@ export async function GET(
     });
 
     const headers = new Headers();
-    
+
     // Copy relevant headers from Drive response
     if (driveResponse.headers.get("Content-Type")) {
       headers.set("Content-Type", driveResponse.headers.get("Content-Type")!);
@@ -104,7 +104,7 @@ export async function GET(
     if (driveResponse.headers.get("Content-Length")) {
       headers.set("Content-Length", driveResponse.headers.get("Content-Length")!);
     }
-    
+
     if (isInline) {
       headers.set("Content-Disposition", `inline; filename="${file.data.name}"`);
     }

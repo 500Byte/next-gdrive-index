@@ -5,7 +5,7 @@ import { type ActionResponseSchema } from "~/types";
 
 import { encryptionService, gdrive, gdriveNoCache } from "~/lib/utils.server";
 
-import { Schema_File, Schema_File_Shortcut, Schema_FileToken } from "~/types/schema";
+import { Schema_File, Schema_FileToken, Schema_File_Shortcut } from "~/types/schema";
 
 import config from "config";
 
@@ -63,9 +63,7 @@ async function getDecryptedSharedDrive(): Promise<string | undefined> {
 async function mapDriveFileToFileSchema(file: any) {
   return {
     encryptedId: await encryptionService.encrypt(file.id!),
-    encryptedWebContentLink: file.webContentLink
-      ? await encryptionService.encrypt(file.webContentLink)
-      : undefined,
+    encryptedWebContentLink: file.webContentLink ? await encryptionService.encrypt(file.webContentLink) : undefined,
     name: file.name!,
     mimeType: file.mimeType!,
     trashed: file.trashed ?? false,
@@ -94,9 +92,7 @@ async function mapDriveFileToFileSchema(file: any) {
 // Actions
 // ============================================================================
 
-export async function ListFiles(
-  input: z.infer<typeof ListFilesInputSchema>,
-): Promise<
+export async function ListFiles(input: z.infer<typeof ListFilesInputSchema>): Promise<
   ActionResponseSchema<{
     files: z.infer<typeof Schema_File>[];
     nextPageToken?: string | null;
@@ -115,14 +111,10 @@ export async function ListFiles(
   const decryptedId = await encryptionService.decrypt(id ?? config.apiConfig.rootFolder);
   const sharedDriveOpts = await getSharedDriveOptions();
 
-  const filterName = config.apiConfig.hiddenFiles
-    .map((item) => `not name = '${item}'`)
-    .join(" and ");
-  const filterQuery: string = [
-    ...config.apiConfig.defaultQuery,
-    `'${decryptedId}' in parents`,
-    filterName,
-  ].join(" and ");
+  const filterName = config.apiConfig.hiddenFiles.map((item) => `not name = '${item}'`).join(" and ");
+  const filterQuery: string = [...config.apiConfig.defaultQuery, `'${decryptedId}' in parents`, filterName].join(
+    " and ",
+  );
 
   const data = await gdrive.files.list({
     q: filterQuery,
@@ -209,9 +201,7 @@ export async function GetFile(
   };
 }
 
-export async function GetReadme(
-  input: z.infer<typeof GetReadmeInputSchema> = null,
-): Promise<
+export async function GetReadme(input: z.infer<typeof GetReadmeInputSchema> = null): Promise<
   ActionResponseSchema<{
     type: "markdown" | "txt";
     content: string;
@@ -226,9 +216,7 @@ export async function GetReadme(
     };
   }
 
-  const decryptedId = await encryptionService.decrypt(
-    validationResult.data ?? config.apiConfig.rootFolder,
-  );
+  const decryptedId = await encryptionService.decrypt(validationResult.data ?? config.apiConfig.rootFolder);
   const sharedDriveOpts = await getSharedDriveOptions();
 
   const filterQuery: string = [
@@ -259,9 +247,7 @@ export async function GetReadme(
     file = data.files[0];
   } else {
     file = data.files.find((file: any) => file.mimeType === "text/markdown");
-    file ??= data.files.find(
-      (file: any) => file.mimeType === "application/vnd.google-apps.shortcut",
-    );
+    file ??= data.files.find((file: any) => file.mimeType === "application/vnd.google-apps.shortcut");
   }
 
   if (!file)
@@ -293,21 +279,15 @@ export async function GetReadme(
           data: null,
         };
 
-      const shortcutContent = await gdrive.files.getContent(
-        parsedData.data.shortcutDetails.targetId,
-        {
-          supportsAllDrives: config.apiConfig.isTeamDrive,
-        },
-      );
+      const shortcutContent = await gdrive.files.getContent(parsedData.data.shortcutDetails.targetId, {
+        supportsAllDrives: config.apiConfig.isTeamDrive,
+      });
 
       return {
         success: true,
         message: "README found",
         data: {
-          type:
-            parsedData.data.shortcutDetails.targetMimeType === "text/markdown"
-              ? "markdown"
-              : "txt",
+          type: parsedData.data.shortcutDetails.targetMimeType === "text/markdown" ? "markdown" : "txt",
           content: shortcutContent,
         },
       };
@@ -347,9 +327,7 @@ export async function GetBanner(
     };
   }
 
-  const decryptedId = await encryptionService.decrypt(
-    validationResult.data ?? config.apiConfig.rootFolder,
-  );
+  const decryptedId = await encryptionService.decrypt(validationResult.data ?? config.apiConfig.rootFolder);
   const sharedDriveOpts = await getSharedDriveOptions();
 
   const filterQuery: string = [
@@ -382,9 +360,7 @@ export async function GetBanner(
   };
 }
 
-export async function GetContent(
-  input: z.infer<typeof GetContentInputSchema>,
-): Promise<ActionResponseSchema<string>> {
+export async function GetContent(input: z.infer<typeof GetContentInputSchema>): Promise<ActionResponseSchema<string>> {
   const validationResult = GetContentInputSchema.safeParse(input);
   if (!validationResult.success) {
     return {
@@ -427,17 +403,13 @@ export async function GetSiblingsMedia(
       error: pathIds.error,
     };
 
-  const folderPaths = pathIds.data.filter(
-    (item) => item.mimeType === "application/vnd.google-apps.folder",
-  );
+  const folderPaths = pathIds.data.filter((item) => item.mimeType === "application/vnd.google-apps.folder");
 
   const parentId = folderPaths[folderPaths.length - 1]?.id ?? config.apiConfig.rootFolder;
   const decryptedParentId = await encryptionService.decrypt(parentId);
   const sharedDriveOpts = await getSharedDriveOptions();
 
-  const filterName = config.apiConfig.hiddenFiles
-    .map((item) => `not name = '${item}'`)
-    .join(" and ");
+  const filterName = config.apiConfig.hiddenFiles.map((item) => `not name = '${item}'`).join(" and ");
   const filterQuery: string = [
     ...config.apiConfig.defaultQuery,
     `'${decryptedParentId}' in parents`,
@@ -453,8 +425,7 @@ export async function GetSiblingsMedia(
     ...sharedDriveOpts,
   });
 
-  if (!data.files?.length)
-    return { success: true, message: "No siblings media found", data: [] };
+  if (!data.files?.length) return { success: true, message: "No siblings media found", data: [] };
 
   const files: z.infer<typeof Schema_File>[] = [];
   for (const file of data.files) {
@@ -491,14 +462,8 @@ export async function SearchFiles(
   const { query } = validationResult.data;
   const sharedDriveOpts = await getSharedDriveOptions();
 
-  const filterName = config.apiConfig.hiddenFiles
-    .map((item) => `not name = '${item}'`)
-    .join(" and ");
-  const filterQuery: string = [
-    ...config.apiConfig.defaultQuery,
-    `name contains '${query}'`,
-    filterName,
-  ].join(" and ");
+  const filterName = config.apiConfig.hiddenFiles.map((item) => `not name = '${item}'`).join(" and ");
+  const filterQuery: string = [...config.apiConfig.defaultQuery, `name contains '${query}'`, filterName].join(" and ");
 
   const data = await gdrive.files.list({
     q: filterQuery,
@@ -547,9 +512,7 @@ export async function GetSearchResultPath(
     };
   }
 
-  const decryptedId = await encryptionService.decrypt(
-    validationResult.data ?? config.apiConfig.rootFolder,
-  );
+  const decryptedId = await encryptionService.decrypt(validationResult.data ?? config.apiConfig.rootFolder);
 
   const data = await gdrive.files.get(decryptedId, {
     fields: "id,name,parents",
@@ -685,10 +648,7 @@ export async function ValidatePaths(
 }
 
 // Re-export path fetching helper (originally from paths.ts)
-export async function GetFilePaths(
-  fileName: string,
-  parentId?: string,
-): Promise<ActionResponseSchema<string>> {
+export async function GetFilePaths(fileName: string, parentId?: string): Promise<ActionResponseSchema<string>> {
   const decryptedRootId = await encryptionService.decrypt(config.apiConfig.rootFolder);
   if (!decryptedRootId)
     return {
@@ -820,4 +780,3 @@ export async function ValidateFileToken(
     data: parsedToken.data,
   };
 }
-

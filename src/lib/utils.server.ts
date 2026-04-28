@@ -7,14 +7,14 @@ import { Schema_ServiceAccount } from "~/types/schema";
 
 function uint8ArrayToHex(arr: Uint8Array): string {
   return Array.from(arr)
-    .map(b => b.toString(16).padStart(2, '0'))
-    .join('');
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
 }
 
 function hexToUint8Array(hex: string): Uint8Array {
   const matches = hex.match(/.{1,2}/g);
   if (!matches) throw new Error("Invalid hex string");
-  const bytes = matches.map(byte => parseInt(byte, 16));
+  const bytes = matches.map((byte) => parseInt(byte, 16));
   const buffer = new ArrayBuffer(bytes.length);
   const view = new Uint8Array(buffer);
   for (let i = 0; i < bytes.length; i++) {
@@ -29,7 +29,7 @@ function hexToUint8Array(hex: string): Uint8Array {
 class EncryptionService {
   private key: string;
   private delimiter = ";";
-  
+
   constructor() {
     const envKey = getEnvVar("ENCRYPTION_KEY");
     if (!envKey) {
@@ -48,20 +48,14 @@ class EncryptionService {
 
       const iv = crypto.getRandomValues(new Uint8Array(12));
       const alg = { name: "AES-GCM", iv };
-      const keyhash = await crypto.subtle.digest(
-        "SHA-256",
-        new TextEncoder().encode(forceKey ?? this.getKey())
-      );
+      const keyhash = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(forceKey ?? this.getKey()));
 
       const encodedData = new TextEncoder().encode(data);
       const secretKey = await crypto.subtle.importKey("raw", keyhash, alg, false, ["encrypt"]);
 
       const encryptedData = await crypto.subtle.encrypt(alg, secretKey, encodedData);
 
-      return [
-        uint8ArrayToHex(new Uint8Array(encryptedData)),
-        uint8ArrayToHex(iv)
-      ].join(this.delimiter);
+      return [uint8ArrayToHex(new Uint8Array(encryptedData)), uint8ArrayToHex(iv)].join(this.delimiter);
     } catch (error) {
       const e = error as Error;
       console.error(`[EncryptionService.encrypt] ${e.message}`);
@@ -78,20 +72,13 @@ class EncryptionService {
 
       const ivBytes = hexToUint8Array(iv);
       const cipherBytes = hexToUint8Array(cipherText);
-      
+
       const alg = { name: "AES-GCM", iv: ivBytes as unknown as BufferSource };
-      const keyhash = await crypto.subtle.digest(
-        "SHA-256",
-        new TextEncoder().encode(forceKey ?? this.getKey())
-      );
+      const keyhash = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(forceKey ?? this.getKey()));
 
       const secretKey = await crypto.subtle.importKey("raw", keyhash, alg, false, ["decrypt"]);
 
-      const decryptedData = await crypto.subtle.decrypt(
-        alg,
-        secretKey,
-        cipherBytes as unknown as BufferSource
-      );
+      const decryptedData = await crypto.subtle.decrypt(alg, secretKey, cipherBytes as unknown as BufferSource);
 
       return new TextDecoder().decode(decryptedData);
     } catch (error) {
@@ -118,23 +105,23 @@ class GoogleDriveEdgeClient {
   constructor() {
     const serviceB64 = getEnvVar("GD_SERVICE_B64");
     if (!serviceB64) throw new Error("GD_SERVICE_B64 environment variable is required");
-    
+
     const decodedB64 = base64Decode<string>(serviceB64, "standard");
     if (!decodedB64) throw new Error("Failed to decode GD_SERVICE_B64");
-    
+
     const json: unknown = JSON.parse(decodedB64);
-    
-    if (json && typeof json === 'object' && 'private_key' in json) {
+
+    if (json && typeof json === "object" && "private_key" in json) {
       const jsonObj = json as Record<string, unknown>;
       const pk = jsonObj.private_key;
-      if (typeof pk === 'string') {
-        jsonObj.private_key = pk.replace(/\\n/g, '\n');
+      if (typeof pk === "string") {
+        jsonObj.private_key = pk.replace(/\\n/g, "\n");
       }
     }
-    
+
     const parsedAuth = Schema_ServiceAccount.safeParse(json);
     if (!parsedAuth.success) throw new Error("Failed to parse service account");
-    
+
     this.serviceAccount = parsedAuth.data;
   }
 
@@ -144,10 +131,10 @@ class GoogleDriveEdgeClient {
     }
 
     const now = Math.floor(Date.now() / 1000);
-    
+
     const normalizedPk = this.serviceAccount.private_key.replace(/\\n/g, "\n");
     const privateKey = await importPKCS8(normalizedPk, "RS256");
-    
+
     const jwt = await new SignJWT({
       iss: this.serviceAccount.client_email,
       scope: "https://www.googleapis.com/auth/drive",
@@ -174,10 +161,10 @@ class GoogleDriveEdgeClient {
       throw new Error(`Failed to get access token: ${error}`);
     }
 
-    const tokenData = await tokenResponse.json() as { access_token: string; expires_in: number };
+    const tokenData = (await tokenResponse.json()) as { access_token: string; expires_in: number };
     this.accessToken = tokenData.access_token;
-    this.tokenExpiry = Date.now() + (tokenData.expires_in * 1000);
-    
+    this.tokenExpiry = Date.now() + tokenData.expires_in * 1000;
+
     return this.accessToken;
   }
 
@@ -193,7 +180,7 @@ class GoogleDriveEdgeClient {
     corpora?: string;
   }): Promise<{ files?: any[]; nextPageToken?: string }> {
     const token = await this.getAccessToken();
-    
+
     const params = new URLSearchParams();
     if (options.q) params.set("q", options.q);
     if (options.fields) params.set("fields", options.fields);
@@ -205,12 +192,9 @@ class GoogleDriveEdgeClient {
     if (options.driveId) params.set("driveId", options.driveId);
     if (options.corpora) params.set("corpora", options.corpora);
 
-    const response = await fetch(
-      `https://www.googleapis.com/drive/v3/files?${params.toString()}`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    );
+    const response = await fetch(`https://www.googleapis.com/drive/v3/files?${params.toString()}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -220,22 +204,22 @@ class GoogleDriveEdgeClient {
     return await response.json();
   }
 
-  async getFile(fileId: string, options?: {
-    fields?: string;
-    supportsAllDrives?: boolean;
-  }): Promise<any> {
+  async getFile(
+    fileId: string,
+    options?: {
+      fields?: string;
+      supportsAllDrives?: boolean;
+    },
+  ): Promise<any> {
     const token = await this.getAccessToken();
-    
+
     const params = new URLSearchParams();
     if (options?.fields) params.set("fields", options.fields);
     if (options?.supportsAllDrives) params.set("supportsAllDrives", "true");
 
-    const response = await fetch(
-      `https://www.googleapis.com/drive/v3/files/${fileId}?${params.toString()}`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    );
+    const response = await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}?${params.toString()}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -245,23 +229,23 @@ class GoogleDriveEdgeClient {
     return await response.json();
   }
 
-  async getFileContent(fileId: string, options?: {
-    supportsAllDrives?: boolean;
-    acknowledgeAbuse?: boolean;
-  }): Promise<string> {
+  async getFileContent(
+    fileId: string,
+    options?: {
+      supportsAllDrives?: boolean;
+      acknowledgeAbuse?: boolean;
+    },
+  ): Promise<string> {
     const token = await this.getAccessToken();
-    
+
     const params = new URLSearchParams();
     params.set("alt", "media");
     if (options?.supportsAllDrives) params.set("supportsAllDrives", "true");
     if (options?.acknowledgeAbuse) params.set("acknowledgeAbuse", "true");
 
-    const response = await fetch(
-      `https://www.googleapis.com/drive/v3/files/${fileId}?${params.toString()}`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    );
+    const response = await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}?${params.toString()}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -271,13 +255,16 @@ class GoogleDriveEdgeClient {
     return await response.text();
   }
 
-  async getFileStream(fileId: string, options?: {
-    supportsAllDrives?: boolean;
-    acknowledgeAbuse?: boolean;
-    range?: string;
-  }): Promise<Response> {
+  async getFileStream(
+    fileId: string,
+    options?: {
+      supportsAllDrives?: boolean;
+      acknowledgeAbuse?: boolean;
+      range?: string;
+    },
+  ): Promise<Response> {
     const token = await this.getAccessToken();
-    
+
     const params = new URLSearchParams();
     params.set("alt", "media");
     if (options?.supportsAllDrives) params.set("supportsAllDrives", "true");
@@ -286,15 +273,14 @@ class GoogleDriveEdgeClient {
     const headers: Record<string, string> = {
       Authorization: `Bearer ${token}`,
     };
-    
+
     if (options?.range) {
       headers["Range"] = options.range;
     }
 
-    const response = await fetch(
-      `https://www.googleapis.com/drive/v3/files/${fileId}?${params.toString()}`,
-      { headers }
-    );
+    const response = await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}?${params.toString()}`, {
+      headers,
+    });
 
     if (!response.ok && response.status !== 206) {
       const errorText = await response.text();
@@ -306,13 +292,10 @@ class GoogleDriveEdgeClient {
 
   async getShortcutDetails(fileId: string): Promise<any> {
     const token = await this.getAccessToken();
-    
-    const response = await fetch(
-      `https://www.googleapis.com/drive/v3/files/${fileId}?fields=shortcutDetails`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    );
+
+    const response = await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}?fields=shortcutDetails`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -325,7 +308,7 @@ class GoogleDriveEdgeClient {
 
 function getEnvVar(name: string): string | undefined {
   // For Cloudflare Workers, check both process.env and globalThis
-  if (typeof process !== 'undefined' && process.env && process.env[name]) {
+  if (typeof process !== "undefined" && process.env && process.env[name]) {
     return process.env[name];
   }
   // Try to get from globalThis (Cloudflare Workers bindings)
@@ -387,7 +370,7 @@ export const gdrive = {
     getContent: (fileId: string, options?: any) => getDriveClient().getFileContent(fileId, options),
     getStream: (fileId: string, options?: any) => getDriveClient().getFileStream(fileId, options),
     getShortcutDetails: (fileId: string) => getDriveClient().getShortcutDetails(fileId),
-  }
+  },
 };
 
 export const gdriveNoCache = gdrive;

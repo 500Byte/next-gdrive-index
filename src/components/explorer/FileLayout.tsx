@@ -6,32 +6,21 @@ import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { type z } from "zod";
 
-
-
 import { FileItem } from "~/components/explorer";
 import { Status } from "~/components/global";
 import { PageLoader } from "~/components/layout";
 import { Button, LoadingButton } from "~/components/ui/button";
 import Icon from "~/components/ui/icon";
 
-
-
 import { useLayout } from "~/context/layoutContext";
 import useLoading from "~/hooks/useLoading";
 import { cn } from "~/lib/utils";
 
-
-
 import { type Schema_File } from "~/types/schema";
-
-
 
 import { ListFiles } from "~/actions/drive";
 
-
-
 import config from "config";
-
 
 type Props = {
   encryptedId: string;

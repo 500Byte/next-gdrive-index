@@ -186,8 +186,7 @@ export async function CheckPagePassword(
     };
 
   const savedPasswordValue = await encryptionService.decrypt(currentFolderPassword);
-  const passwordFile = await gdriveNoCache.files.getContent(
-    protectedFolderPassword.id!, {
+  const passwordFile = await gdriveNoCache.files.getContent(protectedFolderPassword.id!, {
     supportsAllDrives: config.apiConfig.isTeamDrive,
   });
   if (!passwordFile)

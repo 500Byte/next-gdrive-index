@@ -37,6 +37,8 @@ import { type Schema_File } from "~/types/schema";
 
 import "~/styles/vidstack.css";
 
+/* eslint-disable @typescript-eslint/unbound-method */
+
 type Props = {
   file: z.infer<typeof Schema_File>;
   type: "video" | "audio";
@@ -467,7 +469,9 @@ function PlaylistMenu({
               >
                 {item.mimeType.includes("video") ? (
                   <img
-                    src={`/api/thumb/${item.encryptedId}?url=${item.thumbnailLink ? encodeURIComponent(item.thumbnailLink) : ""}`}
+                    src={`/api/thumb/${item.encryptedId}?url=${
+                      item.thumbnailLink ? encodeURIComponent(item.thumbnailLink) : ""
+                    }`}
                     alt={`Thumbnail for ${item.name}`}
                     className='aspect-video w-full object-contain'
                   />

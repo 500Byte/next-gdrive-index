@@ -436,9 +436,7 @@ function SearchResultItem({ data }: { data: z.infer<typeof Schema_File> }) {
   );
 
   const [thumbnailUrl, setThumbnailUrl] = useState<string>(
-    data.thumbnailLink 
-      ? `/api/thumb/${data.encryptedId}?size=2&url=${encodeURIComponent(data.thumbnailLink)}`
-      : ""
+    data.thumbnailLink ? `/api/thumb/${data.encryptedId}?size=2&url=${encodeURIComponent(data.thumbnailLink)}` : "",
   );
   const [thumbnailLoading, setThumbnailLoading] = useState<boolean>(true);
 
@@ -484,9 +482,7 @@ function SearchResultItem({ data }: { data: z.infer<typeof Schema_File> }) {
               alt={data.name}
               onLoad={() => {
                 if (thumbnailUrl.endsWith("size=2")) {
-                  setThumbnailUrl(
-                    `/api/thumb/${data.encryptedId}?url=${encodeURIComponent(data.thumbnailLink ?? "")}`
-                  );
+                  setThumbnailUrl(`/api/thumb/${data.encryptedId}?url=${encodeURIComponent(data.thumbnailLink ?? "")}`);
                   setThumbnailLoading(false);
                 }
               }}

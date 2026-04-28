@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 // Simple mock that just adds/removes prefix
 vi.mock("~/lib/utils.server", async () => {
@@ -92,9 +92,7 @@ describe("Server Actions (drive.ts)", () => {
   // ============================================================================
   describe("ListFiles", () => {
     it("should return files when successful", async () => {
-      const mockFiles = [
-        { id: "file1", name: "test.txt", mimeType: "text/plain" },
-      ];
+      const mockFiles = [{ id: "file1", name: "test.txt", mimeType: "text/plain" }];
       (gdrive.files.list as any).mockResolvedValueOnce({
         files: mockFiles,
         nextPageToken: undefined,
@@ -202,9 +200,7 @@ describe("Server Actions (drive.ts)", () => {
   // ============================================================================
   describe("SearchFiles", () => {
     it("should return search results", async () => {
-      const mockFiles = [
-        { id: "file1", name: "search-result.txt", mimeType: "text/plain" },
-      ];
+      const mockFiles = [{ id: "file1", name: "search-result.txt", mimeType: "text/plain" }];
       (gdrive.files.list as any).mockResolvedValueOnce({
         files: mockFiles,
       });

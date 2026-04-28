@@ -4,7 +4,6 @@ import { Schema_File } from "~/types/schema";
 
 import { CreateFileToken } from "~/actions/drive";
 
-
 export async function POST(req: NextRequest) {
   try {
     const body = (await req.json()) as unknown;

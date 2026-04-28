@@ -198,7 +198,7 @@ export async function GetReadme(id: string | null = null): Promise<
     file = data.files[0];
   } else {
     file = data.files.find((file) => file.mimeType === "text/markdown");
-    file ??= data.files.find((file) => file.mimeType === 'application/vnd.google-apps.shortcut');
+    file ??= data.files.find((file) => file.mimeType === "application/vnd.google-apps.shortcut");
   }
 
   if (!file)
