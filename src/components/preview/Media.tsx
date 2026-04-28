@@ -467,7 +467,7 @@ function PlaylistMenu({
               >
                 {item.mimeType.includes("video") ? (
                   <img
-                    src={`/api/thumb/${item.encryptedId}`}
+                    src={`/api/thumb/${item.encryptedId}?url=${item.thumbnailLink ? encodeURIComponent(item.thumbnailLink) : ""}`}
                     alt={`Thumbnail for ${item.name}`}
                     className='aspect-video w-full object-contain'
                   />

@@ -33,7 +33,7 @@ export default function PreviewImage({ file }: Props) {
       ) : (
         <div className='relative grid h-auto max-h-[66dvh] min-h-[50dvh] w-full place-items-center'>
           <img
-            src={`/api/thumb/${file.encryptedId}`}
+            src={`/api/thumb/${file.encryptedId}?url=${file.thumbnailLink ? encodeURIComponent(file.thumbnailLink) : ""}`}
             alt={file.name}
             className={cn(
               "absolute top-0 h-full max-h-[66dvh] min-h-[50dvh] w-auto rounded-lg bg-muted object-contain object-center opacity-50 transition ease-in-out",

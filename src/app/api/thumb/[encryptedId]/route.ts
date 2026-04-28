@@ -19,12 +19,14 @@ export async function GET(request: NextRequest, { params }: Props) {
   try {
     const searchParams = new URL(request.nextUrl).searchParams;
     const size = searchParams.get("size") ?? "512";
+    const thumbnailUrlParam = searchParams.get("url");
 
-    const env = (globalThis as any).env;
-    const domain = env?.NEXT_PUBLIC_DOMAIN ?? config.basePath;
     const referer = request.headers.get("Referer") ?? "";
+    const host = request.headers.get("Host") ?? new URL(request.url).host;
 
-    if (referer && !referer.includes(domain)) {
+    // Permitir requests sin referer (browsers sin referer, o requests directas)
+    // Validar que el referer sea del mismo dominio que el request actual
+    if (referer && !referer.includes(host)) {
       throw new Error("Invalid request");
     }
 
@@ -33,23 +35,41 @@ export async function GET(request: NextRequest, { params }: Props) {
       throw new Error("Invalid size");
     }
 
-    const decryptedId = await encryptionService.decrypt(encryptedId);
+    // Obtener la URL del thumbnail
+    let thumbnailUrl: string | null = null;
 
-    const url = `https://drive.google.com/thumbnail?id=${decryptedId}&sz=w${size}`;
-
-    if (!config.apiConfig.proxyThumbnail) {
-      return NextResponse.redirect(url);
+    if (thumbnailUrlParam) {
+      // Si se pasó la URL como parámetro, usar esa
+      thumbnailUrl = decodeURIComponent(thumbnailUrlParam);
+    } else {
+      // Intentar decryptar el encryptedId para obtener fileId
+      const decryptedId = await encryptionService.decrypt(encryptedId);
+      // Por compatibilidad, intentar usar Google thumbnail API (puede no funcionar)
+      thumbnailUrl = `https://drive.google.com/thumbnail?id=${decryptedId}&sz=w${size}`;
     }
 
-    const downloadThumb = await fetch(url, {
+    if (!thumbnailUrl) {
+      return new NextResponse("No thumbnail available", { status: 404 });
+    }
+
+    if (!config.apiConfig.proxyThumbnail) {
+      return NextResponse.redirect(thumbnailUrl);
+    }
+
+    const downloadThumb = await fetch(thumbnailUrl, {
       cache: "force-cache",
     });
+
+    if (!downloadThumb.ok) {
+      return new NextResponse("Thumbnail not found", { status: 404 });
+    }
+
     const buffer = await downloadThumb.arrayBuffer();
 
     return new NextResponse(buffer, {
       headers: {
         "Cache-Control": "public, max-age=31536000, immutable",
-        "Content-Type": "image/jpeg",
+        "Content-Type": downloadThumb.headers.get("Content-Type") ?? "image/jpeg",
         "Content-Length": buffer.byteLength.toString(),
       },
     });
