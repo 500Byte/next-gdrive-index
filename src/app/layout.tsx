@@ -13,7 +13,7 @@ import "~/styles/code-highlight.css";
 import "~/styles/globals.css";
 import "~/styles/markdown.css";
 
-import config from "config";
+import config, { initConfig } from "config";
 
 const sourceSans3 = Source_Sans_3({
   weight: ["300", "400", "600", "700"],
@@ -37,44 +37,48 @@ const jetbrainsMono = JetBrains_Mono({
   variable: "--font-jetbrains-mono",
 });
 
-export const metadata: Metadata = {
-  metadataBase: new URL(BASE_URL.includes("http") ? BASE_URL : `https://${BASE_URL}`),
-  title: {
-    default: config.siteConfig.siteName,
-    template: config.siteConfig.siteNameTemplate?.replace("%t", config.siteConfig.siteName) ?? "%s",
-  },
-  description: config.siteConfig.siteDescription,
-  authors: config.siteConfig.siteAuthor
-    ? {
-        name: config.siteConfig.siteAuthor,
-      }
-    : undefined,
-  creator: "mbaharip",
-  icons: [
-    {
-      url: config.siteConfig.favIcon,
+export async function generateMetadata(): Promise<Metadata> {
+  await initConfig();
+  return {
+    metadataBase: new URL(BASE_URL.includes("http") ? BASE_URL : `https://${BASE_URL}`),
+    title: {
+      default: config.siteConfig.siteName,
+      template: config.siteConfig.siteNameTemplate?.replace("%t", config.siteConfig.siteName) ?? "%s",
     },
-  ],
-  keywords: ["gdrive", "index", "nextjs", "reactjs", "google drive"],
-  openGraph: {
-    type: "website",
-    siteName: config.siteConfig.siteName,
-    images: [
+    description: config.siteConfig.siteDescription,
+    authors: config.siteConfig.siteAuthor
+      ? {
+          name: config.siteConfig.siteAuthor,
+        }
+      : undefined,
+    creator: "mbaharip",
+    icons: [
       {
-        url: "/og.webp",
-        width: 1200,
-        height: 630,
+        url: config.siteConfig.favIcon,
       },
     ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    creator: config.siteConfig.twitterHandle,
-  },
-  robots: config.siteConfig.robots,
-};
+    keywords: ["gdrive", "index", "nextjs", "reactjs", "google drive"],
+    openGraph: {
+      type: "website",
+      siteName: config.siteConfig.siteName,
+      images: [
+        {
+          url: "/og.webp",
+          width: 1200,
+          height: 630,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      creator: config.siteConfig.twitterHandle,
+    },
+    robots: config.siteConfig.robots,
+  };
+}
 
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  await initConfig();
   const head = await headers();
   const pathname = head.get("X-Pathname") ?? "/";
   let unlocked: ActionResponseSchema = {
