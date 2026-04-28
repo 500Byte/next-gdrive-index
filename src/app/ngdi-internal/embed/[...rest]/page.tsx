@@ -4,10 +4,8 @@ import { notFound } from "next/navigation";
 import { EmbedPage } from "~/components/internal";
 import { ErrorComponent } from "~/components/layout";
 
-import { GetFile } from "~/actions/files";
+import { GetFile, ValidatePaths, CreateFileToken } from "~/actions/drive";
 import { CheckPagePassword } from "~/actions/password";
-import { ValidatePaths } from "~/actions/paths";
-import { CreateFileToken } from "~/actions/token";
 
 export const revalidate = 60;
 export const dynamic = "force-dynamic";

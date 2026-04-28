@@ -2,8 +2,7 @@ import { type NextRequest, NextResponse } from "next/server";
 
 import { encryptionService } from "~/lib/utils.server";
 
-import { GetFile } from "~/actions/files";
-import { ValidatePaths } from "~/actions/paths";
+import { GetFile, ValidatePaths } from "~/actions/drive";
 
 export const dynamic = "force-dynamic";
 

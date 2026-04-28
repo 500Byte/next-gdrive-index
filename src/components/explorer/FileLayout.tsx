@@ -26,7 +26,7 @@ import { type Schema_File } from "~/types/schema";
 
 
 
-import { ListFiles } from "~/actions/files";
+import { ListFiles } from "~/actions/drive";
 
 
 

@@ -12,10 +12,8 @@ import { formatPathToBreadcrumb } from "~/lib/utils";
 
 import { type Schema_File } from "~/types/schema";
 
-import { GetBanner, GetFile, GetReadme, GetSiblingsMedia, ListFiles } from "~/actions/files";
+import { GetBanner, GetFile, GetReadme, GetSiblingsMedia, ListFiles, ValidatePaths, CreateFileToken } from "~/actions/drive";
 import { CheckPagePassword } from "~/actions/password";
-import { ValidatePaths } from "~/actions/paths";
-import { CreateFileToken } from "~/actions/token";
 
 export const revalidate = 60;
 export const dynamic = "force-dynamic";
@@ -131,7 +129,7 @@ export default async function RestPage({ params }: Props) {
     return <ErrorComponent error={new Error(file.error)} />;
   }
   if (!file.data) return <ErrorComponent error={new Error("Failed to get file data")} />;
-  const token = await CreateFileToken(file.data);
+  const token = await CreateFileToken({ encryptedId: file.data.encryptedId, expiredIn: 3600 * 1000 * 30 });
   if (!token.success) return <ErrorComponent error={new Error(token.error)} />;
 
   // Check if file is media (video / audio)

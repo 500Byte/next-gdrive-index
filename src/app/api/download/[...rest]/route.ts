@@ -2,10 +2,8 @@ import { type NextRequest, NextResponse } from "next/server";
 
 import { encryptionService, gdrive } from "~/lib/utils.server";
 
-import { GetFile } from "~/actions/files";
+import { GetFile, ValidatePaths, ValidateFileToken } from "~/actions/drive";
 import { CheckIndexPassword, CheckPagePassword } from "~/actions/password";
-import { ValidatePaths } from "~/actions/paths";
-import { ValidateFileToken } from "~/actions/token";
 
 import config from "config";
 

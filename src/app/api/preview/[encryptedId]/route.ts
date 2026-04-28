@@ -2,7 +2,7 @@ import { type NextRequest, NextResponse } from "next/server";
 
 import { encryptionService, gdriveNoCache } from "~/lib/utils.server";
 
-import { GetFile } from "~/actions/files";
+import { GetFile } from "~/actions/drive";
 
 import config from "config";
 

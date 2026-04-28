@@ -2,7 +2,7 @@ import { type NextRequest, NextResponse } from "next/server";
 
 import { Schema_File } from "~/types/schema";
 
-import { CreateFileToken } from "~/actions/token";
+import { CreateFileToken } from "~/actions/drive";
 
 
 export async function POST(req: NextRequest) {
@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
     const { data, error } = Schema_File.safeParse(body);
     if (error) throw new Error("Invalid request payload");
 
-    const token = await CreateFileToken(data);
+    const token = await CreateFileToken({ encryptedId: data.encryptedId });
     if (!token.success) throw new Error(token.error);
     return NextResponse.json({ data: token.data });
   } catch (error) {

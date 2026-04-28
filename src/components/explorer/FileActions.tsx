@@ -45,7 +45,7 @@ import { bytesToReadable, cn, durationToReadable, formatDate } from "~/lib/utils
 
 import { type Schema_File } from "~/types/schema";
 
-import { GetSearchResultPath, SearchFiles } from "~/actions/search";
+import { GetSearchResultPath, SearchFiles } from "~/actions/drive";
 
 import config from "config";
 
@@ -90,7 +90,7 @@ export default function FileActions() {
   const onSearch = async () => {
     setSearchLoading(true);
     try {
-      const results = await SearchFiles(debouncedSearchInput);
+      const results = await SearchFiles({ query: debouncedSearchInput });
       if (!results.success) throw new Error(results.error);
       setSearchResults(results.data);
     } catch (error) {

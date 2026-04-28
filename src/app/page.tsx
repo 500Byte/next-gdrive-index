@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 
 import { cn } from "~/lib/utils";
 
-import { GetReadme, ListFiles } from "~/actions/files";
+import { GetReadme, ListFiles } from "~/actions/drive";
 
 import config from "config";
 
@@ -12,7 +12,7 @@ export const revalidate = 60;
 export const dynamic = "force-dynamic";
 
 export default async function RootPage() {
-  const [data, readme] = await Promise.all([ListFiles(), GetReadme()]);
+  const [data, readme] = await Promise.all([ListFiles({}), GetReadme()]);
   if (!data.success) return <ErrorComponent error={new Error(data.error)} />;
   if (!readme.success) return <ErrorComponent error={new Error(readme.error)} />;
 

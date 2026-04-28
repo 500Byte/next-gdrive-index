@@ -13,7 +13,7 @@ import { cn } from "~/lib/utils";
 
 import { type Schema_File } from "~/types/schema";
 
-import { GetContent } from "~/actions/files";
+import { GetContent } from "~/actions/drive";
 
 type Props = {
   file: z.infer<typeof Schema_File>;
