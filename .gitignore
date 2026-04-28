@@ -52,3 +52,4 @@ service-account.json
 # Skills
 skills/
 skills-lock.json
+.worktrees/
