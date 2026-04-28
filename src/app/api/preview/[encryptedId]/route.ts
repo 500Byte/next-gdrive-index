@@ -109,7 +109,21 @@ export async function GET(
       headers.set("Content-Disposition", `inline; filename="${file.data.name}"`);
     }
 
-    return new Response(driveResponse.body, {
+    // Use TransformStream to properly handle streaming in Cloudflare Workers
+    // This avoids "Unable to enqueue" errors from OpenNext's Node.js compatibility layer
+    const { readable, writable } = new TransformStream({
+      transform(chunk, controller) {
+        controller.enqueue(chunk);
+      },
+    });
+
+    // Pipe the drive response to the transform stream
+    // NOTE: No await here - this runs asynchronously
+    driveResponse.body?.pipeTo(writable).catch(() => {
+      // Silently handle any piping errors (client disconnect, etc.)
+    });
+
+    return new Response(readable, {
       status: isFullyLoaded ? 200 : 206,
       headers: headers,
     });
