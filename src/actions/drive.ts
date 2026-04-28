@@ -5,6 +5,8 @@ import { type ActionResponseSchema } from "~/types";
 
 import { encryptionService, gdrive, gdriveNoCache } from "~/lib/utils.server";
 
+import { transformDriveFile, transformDriveFiles } from "~/lib/file-transformer";
+
 import { Schema_File, Schema_FileToken, Schema_File_Shortcut } from "~/types/schema";
 
 import config from "config";
@@ -57,38 +59,6 @@ async function getDecryptedSharedDrive(): Promise<string | undefined> {
 }
 
 // ============================================================================
-// File Mapping Helper
-// ============================================================================
-
-async function mapDriveFileToFileSchema(file: any) {
-  return {
-    encryptedId: await encryptionService.encrypt(file.id!),
-    encryptedWebContentLink: file.webContentLink ? await encryptionService.encrypt(file.webContentLink) : undefined,
-    name: file.name!,
-    mimeType: file.mimeType!,
-    trashed: file.trashed ?? false,
-    modifiedTime: new Date(file.modifiedTime!).toLocaleDateString(),
-    fileExtension: file.fileExtension ?? undefined,
-    size: file.size ? Number(file.size) : undefined,
-    thumbnailLink: file.thumbnailLink ?? undefined,
-    imageMediaMetadata: file.imageMediaMetadata
-      ? {
-          width: Number(file.imageMediaMetadata.width),
-          height: Number(file.imageMediaMetadata.height),
-          rotation: Number(file.imageMediaMetadata.rotation ?? 0),
-        }
-      : undefined,
-    videoMediaMetadata: file.videoMediaMetadata
-      ? {
-          durationMillis: Number(file.videoMediaMetadata.durationMillis),
-          height: Number(file.videoMediaMetadata.height),
-          width: Number(file.videoMediaMetadata.width),
-        }
-      : undefined,
-  };
-}
-
-// ============================================================================
 // Actions
 // ============================================================================
 
@@ -135,10 +105,7 @@ export async function ListFiles(input: z.infer<typeof ListFilesInputSchema>): Pr
       },
     };
 
-  const files: z.infer<typeof Schema_File>[] = [];
-  for (const file of data.files) {
-    files.push(await mapDriveFileToFileSchema(file));
-  }
+  const files = await transformDriveFiles(data.files);
 
   const parsed = Schema_File.array().safeParse(files);
   if (!parsed.success)
@@ -184,7 +151,7 @@ export async function GetFile(
       error: "NotFound",
     };
 
-  const file: z.infer<typeof Schema_File> = await mapDriveFileToFileSchema(data);
+  const file = await transformDriveFile(data);
 
   const parsed = Schema_File.safeParse(file);
   if (!parsed.success)
@@ -427,10 +394,7 @@ export async function GetSiblingsMedia(
 
   if (!data.files?.length) return { success: true, message: "No siblings media found", data: [] };
 
-  const files: z.infer<typeof Schema_File>[] = [];
-  for (const file of data.files) {
-    files.push(await mapDriveFileToFileSchema(file));
-  }
+  const files = await transformDriveFiles(data.files);
 
   const parsed = Schema_File.array().safeParse(files);
   if (!parsed.success)
@@ -480,10 +444,7 @@ export async function SearchFiles(
       data: [],
     };
 
-  const files: z.infer<typeof Schema_File>[] = [];
-  for (const file of data.files) {
-    files.push(await mapDriveFileToFileSchema(file));
-  }
+  const files = await transformDriveFiles(data.files);
 
   const parsed = Schema_File.array().safeParse(files);
   if (!parsed.success)
