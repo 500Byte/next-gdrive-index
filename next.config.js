@@ -5,7 +5,6 @@ const path = require("path");
 const nextConfig = {
   reactStrictMode: true,
   pageExtensions: ["tsx", "ts"],
-  output: "standalone",
   webpack: (config) => {
     config.resolve.alias = {
       ...config.resolve.alias,

@@ -4,6 +4,7 @@ import { usePreviewBase } from "./usePreviewBase";
 import { Status } from "~/components/global";
 import { PageLoader } from "~/components/layout";
 import { cn } from "~/lib/utils";
+import { z } from "zod";
 import { type Schema_File } from "~/types/schema";
 
 type Props = {
