@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Fragment, useEffect, useMemo, useState } from "react";
 import { type z } from "zod";
 
-import { useResponsive } from "~/context/responsiveContext";
+import { useIsDesktop } from "~/hooks/useIsDesktop";
 import useLoading from "~/hooks/useLoading";
 import { getPreviewIcon } from "~/lib/previewHelper";
 import { cn } from "~/lib/utils";
@@ -40,7 +40,7 @@ export default function MediaPlaylistLayout({
   playlist,
 }: MediaPlaylistLayoutProps) {
   const loading = useLoading();
-  const { isDesktop } = useResponsive();
+  const { isDesktop } = useIsDesktop();
 
   const [api, setApi] = useState<CarouselApi>();
   const [currentIndex, setCurrentIndex] = useState(0);

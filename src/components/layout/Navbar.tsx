@@ -30,7 +30,7 @@ import { Skeleton } from "~/components/ui/skeleton";
 import { Tooltip, TooltipContent, TooltipTrigger } from "~/components/ui/tooltip";
 
 import { useConfirmDialog } from "~/context/confirmProvider";
-import { useResponsive } from "~/context/responsiveContext";
+import { useIsDesktop } from "~/hooks/useIsDesktop";
 import useLoading from "~/hooks/useLoading";
 import { cn } from "~/lib/utils";
 
@@ -45,7 +45,7 @@ const themeOptions = ["light", "dark"];
 export default function Navbar() {
   const pathname = usePathname();
   const { theme, toggleTheme } = useTheme();
-  const { isDesktop } = useResponsive();
+  const { isDesktop } = useIsDesktop();
   const isLoading = useLoading();
   const confirm = useConfirmDialog();
 

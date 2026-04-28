@@ -19,7 +19,7 @@ import {
 import Icon from "~/components/ui/icon";
 import { Progress } from "~/components/ui/progress";
 
-import { useResponsive } from "~/context/responsiveContext";
+import { useIsDesktop } from "~/hooks/useIsDesktop";
 import useLoading from "~/hooks/useLoading";
 import { cn } from "~/lib/utils";
 
@@ -124,7 +124,7 @@ export default function PreviewManga({ file }: Props) {
     unzip.push(buffer);
   }, []);
 
-  const { isDesktop } = useResponsive();
+  const { isDesktop } = useIsDesktop();
 
   useEffect(() => {
     if (!api) return;

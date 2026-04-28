@@ -6,7 +6,7 @@
  */
 import * as React from "react";
 
-import { useResponsive } from "~/context/responsiveContext";
+import { useIsDesktop } from "~/hooks/useIsDesktop";
 import useLoading from "~/hooks/useLoading";
 import { cn } from "~/lib/utils";
 
@@ -46,14 +46,14 @@ interface ResponsiveDialogBodyProps extends React.PropsWithChildren, React.HTMLA
 
 const ResponsiveDialog = (props: ResponsiveDialogRootProps) => {
   const { ...rest } = props;
-  const { isDesktop } = useResponsive();
+  const { isDesktop } = useIsDesktop();
   const Component = React.useMemo(() => (isDesktop ? Dialog : Drawer), [isDesktop]);
   return <Component {...rest} />;
 };
 
 const ResponsiveDialogTrigger = (props: ResponsiveDialogProps) => {
   const { ...rest } = props;
-  const { isDesktop } = useResponsive();
+  const { isDesktop } = useIsDesktop();
   const Component = React.useMemo(() => (isDesktop ? DialogTrigger : DrawerTrigger), [isDesktop]);
 
   return <Component {...rest} />;
@@ -61,7 +61,7 @@ const ResponsiveDialogTrigger = (props: ResponsiveDialogProps) => {
 
 const ResponsiveDialogClose = (props: ResponsiveDialogProps) => {
   const { ...rest } = props;
-  const { isDesktop } = useResponsive();
+  const { isDesktop } = useIsDesktop();
   const loading = useLoading();
   const Component = React.useMemo(() => (isDesktop ? DialogClose : DrawerClose), [isDesktop]);
 
@@ -71,7 +71,7 @@ const ResponsiveDialogClose = (props: ResponsiveDialogProps) => {
 
 const ResponsiveDialogContent = (props: ResponsiveDialogBodyProps) => {
   const { ...rest } = props;
-  const { isDesktop } = useResponsive();
+  const { isDesktop } = useIsDesktop();
   const Component = React.useMemo(() => (isDesktop ? DialogContent : DrawerContent), [isDesktop]);
 
   return (
@@ -88,7 +88,7 @@ const ResponsiveDialogHeader = (
   },
 ) => {
   const { align = "start", className, ...rest } = props;
-  const { isDesktop } = useResponsive();
+  const { isDesktop } = useIsDesktop();
   const Component = React.useMemo(() => (isDesktop ? DialogHeader : DrawerHeader), [isDesktop]);
 
   return (
@@ -106,7 +106,7 @@ const ResponsiveDialogHeader = (
 
 const ResponsiveDialogTitle = (props: ResponsiveDialogProps) => {
   const { ...rest } = props;
-  const { isDesktop } = useResponsive();
+  const { isDesktop } = useIsDesktop();
   const Component = React.useMemo(() => (isDesktop ? DialogTitle : DrawerTitle), [isDesktop]);
 
   return <Component {...rest} />;
@@ -114,7 +114,7 @@ const ResponsiveDialogTitle = (props: ResponsiveDialogProps) => {
 
 const ResponsiveDialogDescription = (props: ResponsiveDialogProps) => {
   const { ...rest } = props;
-  const { isDesktop } = useResponsive();
+  const { isDesktop } = useIsDesktop();
   const loading = useLoading();
   const Component = React.useMemo(() => (isDesktop ? DialogDescription : DrawerDescription), [isDesktop]);
 
@@ -135,7 +135,7 @@ const ResponsiveDialogBody = (props: ResponsiveDialogBodyProps) => {
 
 const ResponsiveDialogFooter = (props: ResponsiveDialogProps) => {
   const { ...rest } = props;
-  const { isDesktop } = useResponsive();
+  const { isDesktop } = useIsDesktop();
   const loading = useLoading();
   const Component = React.useMemo(() => (isDesktop ? DialogFooter : DrawerFooter), [isDesktop]);
 

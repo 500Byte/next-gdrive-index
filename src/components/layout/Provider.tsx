@@ -11,7 +11,7 @@ import { TooltipProvider } from "~/components/ui/tooltip";
 
 import UseConfirmDialogProvider from "~/context/confirmProvider";
 import { LayoutProvider } from "~/context/layoutContext";
-import { ResponsiveProvider } from "~/context/responsiveContext";
+
 import { cn } from "~/lib/utils";
 
 type Props = {
@@ -58,23 +58,21 @@ export default function Provider(props: React.PropsWithChildren<Props>) {
 
   return (
     <LayoutProvider>
-      <ResponsiveProvider>
-        <NextTopLoader color='hsl(var(--primary))' {...props.loader} />
-        <UseConfirmDialogProvider>
-          <TooltipProvider {...props.tooltip}>
-            <div
-              className={cn(
-                "flex w-full flex-col items-start font-sans text-foreground",
-                pathname.startsWith("/ngdi-internal/embed/") ? "h-fit" : "h-full min-h-screen",
-              )}
-            >
-              {props.children}
-            </div>
-          </TooltipProvider>
+      <NextTopLoader color='hsl(var(--primary))' {...props.loader} />
+      <UseConfirmDialogProvider>
+        <TooltipProvider {...props.tooltip}>
+          <div
+            className={cn(
+              "flex w-full flex-col items-start font-sans text-foreground",
+              pathname.startsWith("/ngdi-internal/embed/") ? "h-fit" : "h-full min-h-screen",
+            )}
+          >
+            {props.children}
+          </div>
+        </TooltipProvider>
 
-          <Toaster {...props.toaster} />
-        </UseConfirmDialogProvider>
-      </ResponsiveProvider>
+        <Toaster {...props.toaster} />
+      </UseConfirmDialogProvider>
     </LayoutProvider>
   );
 }

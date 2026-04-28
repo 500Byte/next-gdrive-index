@@ -37,7 +37,7 @@ import { Separator } from "~/components/ui/separator";
 import { Skeleton } from "~/components/ui/skeleton";
 
 import { useLayout } from "~/context/layoutContext";
-import { useResponsive } from "~/context/responsiveContext";
+import { useIsDesktop } from "~/hooks/useIsDesktop";
 import useLoading from "~/hooks/useLoading";
 import useRouter from "~/hooks/usePRouter";
 import { getPreviewIcon } from "~/lib/previewHelper";
@@ -62,7 +62,7 @@ export default function FileActions() {
   const [searchError, setSearchError] = useState<string>("");
   const [searchResults, setSearchResults] = useState<z.infer<typeof Schema_File>[]>([]);
 
-  const { isDesktop } = useResponsive();
+  const { isDesktop } = useIsDesktop();
 
   useEffect(() => {
     if (!searchInput) {

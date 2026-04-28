@@ -29,7 +29,7 @@ import {
 import Icon from "~/components/ui/icon";
 import { Separator } from "~/components/ui/separator";
 
-import { useResponsive } from "~/context/responsiveContext";
+import { useIsDesktop } from "~/hooks/useIsDesktop";
 import { getFileType } from "~/lib/previewHelper";
 import { bytesToReadable, durationToReadable, formatDate } from "~/lib/utils";
 
@@ -43,7 +43,7 @@ type Props = {
 };
 export default function PreviewInformation({ file, token }: Props) {
   const pathname = usePathname();
-  const { isDesktop } = useResponsive();
+  const { isDesktop } = useIsDesktop();
   const fileType = useMemo<ReturnType<typeof getFileType>>(() => {
     return getFileType(file.fileExtension ?? "", file.mimeType) ?? "unknown";
   }, [file]);
