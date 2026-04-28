@@ -38,5 +38,5 @@
     "**/*.cjs",
     "**/*.mjs"
   ],
-  "exclude": ["node_modules", ".next", "scripts"]
+  "exclude": ["node_modules", ".next", "scripts", ".agents", "skills"]
 }

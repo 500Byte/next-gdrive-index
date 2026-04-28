@@ -328,17 +328,13 @@ export const base64Decode = <T = unknown>(encoded: string, type: B64Type = "url"
 
 let driveClientInstance: GoogleDriveEdgeClient | null = null;
 function getDriveClient(): GoogleDriveEdgeClient {
-  if (!driveClientInstance) {
-    driveClientInstance = new GoogleDriveEdgeClient();
-  }
+  driveClientInstance ??= new GoogleDriveEdgeClient();
   return driveClientInstance;
 }
 
 let encryptionServiceInstance: EncryptionService | null = null;
 function getEncryptionService(): EncryptionService {
-  if (!encryptionServiceInstance) {
-    encryptionServiceInstance = new EncryptionService();
-  }
+  encryptionServiceInstance ??= new EncryptionService();
   return encryptionServiceInstance;
 }
 

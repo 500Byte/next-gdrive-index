@@ -31,7 +31,7 @@ export function usePreviewBase({ file, fetchPreview, maxSize }: UsePreviewBasePr
       }
     };
 
-    loadPreview();
+    void loadPreview();
   }, [file.encryptedId]);
 
   return {

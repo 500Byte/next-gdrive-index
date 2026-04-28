@@ -13,7 +13,7 @@ import "~/styles/code-highlight.css";
 import "~/styles/globals.css";
 import "~/styles/markdown.css";
 
-import config, { initConfig } from "config";
+import config from "config";
 
 const sourceSans3 = Source_Sans_3({
   weight: ["300", "400", "600", "700"],
@@ -38,7 +38,6 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export async function generateMetadata(): Promise<Metadata> {
-  await initConfig();
   return {
     metadataBase: new URL(BASE_URL.includes("http") ? BASE_URL : `https://${BASE_URL}`),
     title: {
@@ -78,7 +77,6 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  await initConfig();
   const head = await headers();
   const pathname = head.get("X-Pathname") ?? "/";
   let unlocked: ActionResponseSchema = {
