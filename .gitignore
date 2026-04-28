@@ -48,3 +48,7 @@ service-account.json
 
 # OpenNext
 .open-next
+
+# Skills
+skills/
+skills-lock.json
