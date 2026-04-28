@@ -11,6 +11,7 @@
 - **Authentication**: Google Drive API via Service Account (JWT)
 - **Styling**: Tailwind CSS + shadcn/ui components
 - **State**: React Server Components + Server Actions
+- **Testing**: Vitest + Zod validation
 - **Encryption**: Web Crypto API for data encryption
 - **JWT Signing**: jose library for RSA signing
 
@@ -18,8 +19,8 @@
 
 The application consists of:
 - **Frontend**: Next.js pages with React Server Components
-- **API Layer**: Next.js API routes (converted to Cloudflare Workers functions)
-- **Google Drive Integration**: Direct REST API calls with JWT authentication
+- **Server Actions**: Consolidated in `src/actions/drive.ts`
+- **Google Drive Integration**: Direct REST API calls with JWT authentication via `GoogleDriveEdgeClient`
 - **Storage**: Google Drive (via API) + optional R2 cache for OpenNext
 
 ## Setup Commands
@@ -95,15 +96,26 @@ Build output goes to `.open-next/` directory with:
 - `assets/` - Static assets
 - `server-functions/` - Server-side code
 
-### Testing Locally
+### Testing
 
 ```bash
-# After building, test with wrangler dev
-npx wrangler dev .open-next/worker.js --local --port 8787
+# Run all tests once
+npm test
 
-# Test the endpoint
-curl http://localhost:8787
+# Run tests in watch mode
+npm run test:watch
+
+# Run tests with coverage
+npm run test:coverage
+
+# Run specific test file
+npm test -- drive-client.test.ts
 ```
+
+Test files are located in `tests/` directory:
+- `drive-client.test.ts` - Tests for `GoogleDriveEdgeClient`
+- `server-actions.test.ts` - Tests for server actions in `drive.ts`
+- `encryption.test.ts` - Tests for `EncryptionService`
 
 ## Configuration
 
@@ -313,84 +325,48 @@ npm run build:cf
 
 ## Testing
 
-### Manual Testing Checklist
+### Test Structure
 
-1. **Local dev server**: `npm run dev` → http://localhost:3000
-2. **Wrangler dev**: `npx wrangler dev` → http://localhost:8787
-3. **Build test**: `npm run build:cf` completes without errors
-4. **Google Drive access**: Check for successful file listing
+Tests use **Vitest** (not Jest). Test files are in `tests/` directory:
 
-### Authentication Test
+- `drive-client.test.ts` - Unit tests for `GoogleDriveEdgeClient`
+- `server-actions.test.ts` - Unit tests for server actions with Zod validation
+- `encryption.test.ts` - Tests for encryption/decryption
+
+### Running Tests
 
 ```bash
-# Run diagnostic script
-node scripts/diagnose-auth.mjs
+# Run all tests
+npm test
 
-# Expected output:
-# ✅ JSON original - importPKCS8: ÉXITO
-# ✅ .env decoded - importPKCS8: ÉXITO
+# Run with coverage
+npm run test:coverage
+
+# Run specific test
+npm test -- drive-client.test.ts
+
+# Watch mode (development)
+npm run test:watch
 ```
 
-### Production Test
+### Writing Tests
 
-```bash
-# After deploy
-curl -s https://your-domain.workers.dev | head -c 200
-# Should return HTML with 200 OK
-```
+Tests use Vitest with Zod mocks for validation:
 
-## Security Considerations
+```typescript
+import { describe, it, expect, beforeEach, vi } from "vitest";
 
-### Secrets Management
-
-- **Never commit**: `.env`, `.dev.vars`, `service-account.json`
-- **Store in**: Cloudflare Workers Secrets for production
-- **Rotate**: Service account keys annually
-- **Scope**: Grant minimum required Drive permissions to service account
-
-### Encryption
-
-- AES-256-GCM for folder/file ID encryption
-- Encryption key should be 32+ random characters
-- Root folder ID and file IDs are encrypted in URLs
-
-### CORS and Security Headers
-
-Default headers set in `next.config.js`:
-- `X-Frame-Options: DENY`
-- `X-Content-Type-Options: nosniff`
-- `Referrer-Policy: strict-origin-when-cross-origin`
-
-## Deployment
-
-### Cloudflare Workers
-
-```bash
-# Deploy with OpenNext
-npm run deploy
-# or:
-npx opennextjs-cloudflare deploy
-
-# Direct wrangler deploy (if above fails)
-npx wrangler deploy .open-next/worker.js
-```
-
-### Environment Updates
-
-After changing `vars` in `wrangler.jsonc`:
-```bash
-# Deploy to update vars
-npx wrangler deploy .open-next/worker.js
-```
-
-### R2 Bucket (Optional)
-
-For OpenNext cache:
-```bash
-# Create bucket
-npx wrangler r2 bucket create next-gdrive-index-opennext-cache
-
-# Bind in wrangler.jsonc (already configured)
+// Mock modules
+vi.mock("~/lib/utils.server", async () => {
+  const actual = await vi.importActual("~/lib/utils.server");
+  return {
+    ...actual,
+    encryptionService: {
+      encrypt: vi.fn().mockImplementation((val) => `enc_${val}`),
+      decrypt: vi.fn().mockImplementation((val) => val.replace("enc_", "")),
+    },
+  };
+});
 ```
 
 ## Code Style
@@ -399,7 +375,8 @@ npx wrangler r2 bucket create next-gdrive-index-opennext-cache
 
 ```
 src/
-├── actions/        # Server Actions (Next.js)
+├── actions/        # Server Actions (consolidated)
+│   └── drive.ts     # All Drive-related server actions
 ├── app/           # Next.js App Router pages
 ├── components/    # React components
 │   ├── explorer/  # File browser components
@@ -423,15 +400,28 @@ src/
 
 ### Server Actions
 
-All server actions must be in `src/actions/*.ts` and use `"use server"`:
+All server actions are consolidated in `src/actions/drive.ts` with Zod validation:
 
 ```typescript
 "use server";
 
-import { encryptionService, gdrive } from "~/lib/utils.server";
+import { z } from "zod";
 
-export async function ListFiles({ id }: { id?: string }) {
-  // Implementation
+const ListFilesInputSchema = z.object({
+  id: z.string().optional(),
+  pageToken: z.string().optional(),
+});
+
+export async function ListFiles(input: z.infer<typeof ListFilesInputSchema>) {
+  const validationResult = ListFilesInputSchema.safeParse(input);
+  if (!validationResult.success) {
+    return {
+      success: false,
+      message: "Invalid input",
+      error: validationResult.error.message,
+    };
+  }
+  // Implementation...
 }
 ```
 
@@ -442,6 +432,7 @@ export async function ListFiles({ id }: { id?: string }) {
 import { cn } from "~/lib/utils";
 import config from "config";  // → src/config/index.ts
 import { FileItem } from "~/components/explorer";
+import { ListFiles, GetFile } from "~/actions/drive";
 ```
 
 ## Performance
@@ -460,6 +451,29 @@ Monitor bundle size with:
 npm run build
 # Check terminal output for First Load JS
 ```
+
+## Linting & Formatting
+
+### Available Scripts
+
+```bash
+# Run ESLint
+npm run lint
+
+# Fix ESLint errors
+npm run lint:fix
+
+# Check Prettier formatting
+npm run format:check
+
+# Format code with Prettier
+npm run format
+```
+
+### Configuration
+
+- **ESLint**: `.eslintrc.cjs` with Next.js and TypeScript rules
+- **Prettier**: `.prettierrc.cjs` with import sorting and Tailwind CSS plugin
 
 ## Troubleshooting Guide
 
@@ -496,6 +510,8 @@ console.log("[Debug] Value:", value);
 - [Cloudflare Workers Documentation](https://developers.cloudflare.com/workers/)
 - [Google Drive API Documentation](https://developers.google.com/drive/api/guides/about-sdk)
 - [jose Library Documentation](https://github.com/panva/jose)
+- [Vitest Documentation](https://vitest.dev/)
+- [Zod Documentation](https://zod.dev/)
 
 ---
 

@@ -9,6 +9,7 @@
 	<img src='https://img.shields.io/github/license/500Byte/next-gdrive-index' alt='License' />
 	<img src='https://img.shields.io/badge/Next.js-15-black' alt='Next.js 15' />
 	<img src='https://img.shields.io/badge/Cloudflare-Workers-F38020' alt='Cloudflare Workers' />
+	<img src='https://img.shields.io/badge/Vitest-6.0-4ade7a' alt='Vitest' />
 </p>
 
 ## ⚠️ Work In Progress - Cloudflare Workers Migration
@@ -25,7 +26,7 @@ This project is currently being migrated from Vercel to **Cloudflare Workers**. 
 **Forked from** [next-gdrive-index](https://github.com/mbaharip/next-gdrive-index) by [mbaharip](https://github.com/mbaharip).  
 **Heavily inspired by** [onedrive-vercel-index](https://github.com/spencerwooo/onedrive-vercel-index) by [SpencerWooo](https://github.com/spencerwooo).
 
-## Features
+## Features#
 
 ### Security & Access Control
 - **Private Index** — Protect the entire site with a password
@@ -55,7 +56,7 @@ This project is currently being migrated from Vercel to **Cloudflare Workers**. 
 - **Embed Support** — Embed media directly into your site
 - **README Rendering** — Add `.readme.md` files to folders for context
 
-## Prerequisites
+## Prerequisites#
 
 Before deploying, you'll need:
 
@@ -70,70 +71,70 @@ Before deploying, you'll need:
 3. **Cloudflare Account** (for deployment)
    - Sign up at [cloudflare.com](https://cloudflare.com)
 
-## Deployment
+## Deployment#
 
 ### Cloudflare Workers Deployment
 
 ```bash
 # Clone the repository
 git clone https://github.com/500Byte/next-gdrive-index.git
-cd next-gdrive-index
+cd next-gdrive-index;
 
 # Install dependencies
-npm install
+npm install;
 
 # Set up environment variables
-npm run setup
+npm run setup;
 
 # Build for Cloudflare Workers
-npm run build:cf
+npm run build:cf;
 
 # Deploy
-npm run deploy
+npm run deploy;
 ```
 
-### Environment Variables
+### Environment Variables#
 
 Create `.env` and `.dev.vars`:
 
 ```bash
 # Base64-encoded service account JSON
-GD_SERVICE_B64=
+GD_SERVICE_B64=;
 
 # Secret key for encryption (32+ random characters)
-ENCRYPTION_KEY=
+ENCRYPTION_KEY=;
 
 # Site password (optional, for private mode)
-SITE_PASSWORD=
+SITE_PASSWORD=;
 
 # Root folder ID (encrypted)
-ROOT_FOLDER=
+ROOT_FOLDER=;
 
 # Shared drive ID (optional, encrypted)
-SHARED_DRIVE=
+SHARED_DRIVE=;
 
 # Domain configuration
-NEXT_PUBLIC_DOMAIN=your-domain.workers.dev
+NEXT_PUBLIC_DOMAIN=your-domain.workers.dev;
 ```
 
 See `AGENTS.md` for detailed configuration instructions.
 
-## Development
+## Development#
 
 ```bash
 # Install dependencies
-npm install
+npm install;
 
 # Start development server
-npm run dev
+npm run dev;
 
 # Or test with Cloudflare Workers runtime
-npm run preview
+npm run preview;
 
 # Visit http://localhost:3000 or http://localhost:8787
 ```
 
-### Available Scripts
+### Available Scripts#
 
 | Script | Description |
 |--------|-------------|
@@ -144,9 +145,36 @@ npm run preview
 | `npm run deploy` | Deploy to Cloudflare Workers |
 | `npm run lint` | Run ESLint |
 | `npm run format` | Format code with Prettier |
+| `npm run format:check` | Check Prettier formatting |
+| `npm run test` | Run tests with Vitest |
+| `npm run test:watch` | Run tests in watch mode |
+| `npm run test:coverage` | Run tests with coverage |
 | `npm run setup` | Run configuration CLI |
 
-## Tech Stack
+## Testing#
+
+The project uses **Vitest** for unit testing:
+
+```bash
+# Run all tests
+npm test;
+
+# Run tests in watch mode (development)
+npm run test:watch;
+
+# Run tests with coverage report
+npm run test:coverage;
+
+# Run specific test file
+npm test -- drive-client.test.ts;
+```
+
+Test files are located in `tests/` directory:
+- `drive-client.test.ts` - Tests for `GoogleDriveEdgeClient`
+- `server-actions.test.ts` - Tests for server actions
+- `encryption.test.ts` - Tests for encryption/decryption
+
+## Tech Stack#
 
 - **Framework:** [Next.js 15](https://nextjs.org/) (App Router)
 - **Deployment:** [Cloudflare Workers](https://workers.cloudflare.com/) via [OpenNext](https://opennext.js.org/cloudflare)
@@ -158,30 +186,30 @@ npm run preview
 - **Form Handling:** [React Hook Form](https://react-hook-form.com/) + [Zod](https://zod.dev/)
 - **Virtualization:** [@tanstack/react-virtual](https://tanstack.com/virtual)
 - **JWT Signing:** [jose](https://github.com/panva/jose)
+- **Testing:** [Vitest](https://vitest.dev/)
 
-## Known Issues
+## Known Issues#
 
-### File Size Limit & Direct Download
+### File Size Limit & Direct Download#
 
 When `maxFileSize` is enabled, large file downloads redirect to Google Drive. You must set file sharing to `Anyone with the link can view` on the root folder.
 
 > [!WARNING]
 > This exposes the file ID in URLs. While users can view files directly on Google Drive, they cannot browse the folder structure.
 
-### Limited Format Support
-
+### Limited Format Support#
 - **Google Docs/Sheets/Slides** — Not supported (use export or alternative methods)
 - **Shortcuts** — Not currently supported
 - **TS Video Files** — Incorrect MIME type detection prevents preview
 
-## Roadmap
+## Roadmap#
 
 - [ ] **Internationalization (i18n)** — Multi-language support for UI and docs
 - [ ] **Multiple Drives** — Support multiple Google accounts or root folders
 - [ ] **Authentication System** — User-based access for subscribers/members
 - [ ] **Google Workspace Shortcuts** — Support for Drive shortcuts
 
-## Contributing
+## Contributing#
 
 Contributions are welcome! Here's how to get started:
 
@@ -190,9 +218,9 @@ Contributions are welcome! Here's how to get started:
 3. Implement your changes with clear, concise commits
 4. Submit a Pull Request with a description of your changes
 
-Please ensure your code passes linting (`npm run lint`) and formatting checks (`npm run format:check`).
+Please ensure your code passes linting (`npm run lint`), formatting checks (`npm run format:check`), and tests (`npm test`).
 
-## License
+## License#
 
 This project is licensed under the **AGPL-3.0 License** — see the [LICENSE](LICENSE) file for details.
 
