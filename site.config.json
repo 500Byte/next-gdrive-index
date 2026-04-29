@@ -6,7 +6,7 @@
     "defaultQuery": ["trashed = false", "(not mimeType contains 'google-apps' or mimeType contains 'folder')"],
     "defaultField": "id, name, mimeType, thumbnailLink, fileExtension, modifiedTime, size, imageMediaMetadata, videoMediaMetadata, webContentLink, trashed",
     "defaultOrder": "folder, name asc, modifiedTime desc",
-    "itemsPerPage": 50,
+    "itemsPerPage": 20,
     "searchResult": 5,
     "proxyThumbnail": true,
     "streamMaxSize": 104857600,
@@ -82,6 +82,21 @@
         "maxSize": 15728640,
         "maxItem": 10
       }
+    }
+  },
+  "dashboard": {
+    "brand": {
+      "name": "Mi Drive",
+      "logo": "/logo.svg"
+    },
+    "navigation": [
+      { "label": "Home", "path": "/", "icon": "Home" },
+      { "label": "Marketing", "path": "/Marketing", "icon": "Folder" },
+      { "label": "Proyectos", "path": "/Proyectos", "icon": "Folder" }
+    ],
+    "user": {
+      "name": "Admin",
+      "role": "Owner"
     }
   }
 }
