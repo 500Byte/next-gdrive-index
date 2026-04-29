@@ -16,6 +16,7 @@ import {
 import Icon from "~/components/ui/icon";
 
 import { type TLayout } from "~/context/layoutContext";
+import { useInView } from "~/hooks/useInView";
 import useRouter from "~/hooks/usePRouter";
 import { getPreviewIcon } from "~/lib/previewHelper";
 import { bytesToReadable, cn, durationToReadable, formatDate } from "~/lib/utils";
@@ -38,6 +39,9 @@ export default function FileItem({ data, layout }: Props) {
 
   const contextButtonRef = useRef<HTMLDivElement>(null);
   const copyTimeout = useRef<NodeJS.Timeout | null>(null);
+
+  // Lazy loading for thumbnails - only load when near viewport
+  const { ref: thumbnailRef, inView } = useInView("50px");
 
   const useThumbnail = useMemo<boolean>(
     () => !!(data.thumbnailLink && (data.mimeType.includes("image") || data.mimeType.includes("video"))),
@@ -133,12 +137,13 @@ export default function FileItem({ data, layout }: Props) {
           >
             {/* Thumbnail / Icon */}
             <div
+              ref={thumbnailRef}
               className={cn(
                 "relative grid aspect-video h-24 w-full shrink-0 place-items-center overflow-hidden bg-background mobile:h-28 tablet:h-32",
                 layout === "list" && "aspect-square h-20 w-20 mobile:h-24 mobile:w-24 tablet:h-28 tablet:w-28",
               )}
             >
-              {useThumbnail ? (
+              {useThumbnail && inView ? (
                 <>
                   <img
                     src={thumbnailUrl}
@@ -158,7 +163,7 @@ export default function FileItem({ data, layout }: Props) {
                       }
                     }}
                     className={cn(
-                      "relative z-0 h-24 w-full shrink-0 grow-0 object-contain object-center transition duration-500 ease-in-out group-hover:scale-105 mobile:h-28 tablet:h-32",
+                      "relative z-0 h-24 w-full shrink-0 grow-0 object-contain object-center will-change-transform transition duration-500 ease-in-out group-hover:scale-105 mobile:h-28 tablet:h-32",
                       layout === "list" && "h-20 mobile:h-24 tablet:h-28",
                       thumbnailLoading ? "blur-lg" : "blur-0",
                     )}
