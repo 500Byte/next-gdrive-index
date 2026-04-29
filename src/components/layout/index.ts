@@ -1,4 +1,5 @@
 export { default as DashboardHeader } from "./DashboardHeader";
+export { default as DashboardLayout } from "./DashboardLayout";
 export { default as ErrorComponent } from "./Error";
 export { default as Footer } from "./Footer";
 export { default as LeftSidebar } from "./LeftSidebar";
