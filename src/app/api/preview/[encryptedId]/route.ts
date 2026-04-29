@@ -59,63 +59,17 @@ export async function GET(
       });
     }
 
-    const fileSize = Number(file.data.size ?? 0);
-    const isFullyLoaded = isFull ? true : Number(request.headers.get("Range")?.split("-")[1] ?? 0) === fileSize - 1;
-
-    if (config.apiConfig.streamMaxSize && fileSize > config.apiConfig.streamMaxSize) {
-      throw new Error("[400] File is too large to stream", {
-        cause: "File size is larger than the maximum allowed size, please download the file instead",
-      });
-    }
-
-    const ranges = request.headers.get("Range") ?? "bytes=0-";
-    const chunkSize = 5 * 1024 * 1024; // Load 5MB at a time
-    let rangeStart = 0;
-    let rangeEnd = Math.min(chunkSize, fileSize - 1);
-    const rangeSize = /bytes=(\d+)-(\d+)?/.exec(ranges);
-    if (rangeSize) {
-      rangeStart = Number(rangeSize?.[1] ?? 0);
-
-      if (isFullyLoaded) {
-        rangeEnd = fileSize - 1;
-      } else {
-        rangeEnd = Math.min(rangeStart + chunkSize, fileSize - 1);
-      }
-    }
-
-    const driveResponse = await gdriveNoCache.files.getStream(decryptedId, {
-      supportsAllDrives: config.apiConfig.isTeamDrive,
-      acknowledgeAbuse: true,
-      range: `bytes=${rangeStart}-${rangeEnd}`,
-    });
-
-    const headers = new Headers();
-
-    // Copy relevant headers from Drive response
-    if (driveResponse.headers.get("Content-Type")) {
-      headers.set("Content-Type", driveResponse.headers.get("Content-Type")!);
-    }
-    if (driveResponse.headers.get("Content-Range")) {
-      headers.set("Content-Range", driveResponse.headers.get("Content-Range")!);
-    }
-    if (driveResponse.headers.get("Accept-Ranges")) {
-      headers.set("Accept-Ranges", driveResponse.headers.get("Accept-Ranges")!);
-    }
-    if (driveResponse.headers.get("Content-Length")) {
-      headers.set("Content-Length", driveResponse.headers.get("Content-Length")!);
-    }
-
-    if (isInline) {
-      headers.set("Content-Disposition", `inline; filename="${file.data.name}"`);
-    }
-
-    // For Cloudflare Workers with OpenNext, we need to consume the stream
-    // and return it as a new Response to avoid streaming issues
-    const arrayBuffer = await driveResponse.arrayBuffer();
+    // Redirect to Google Drive direct download URL
+    // This allows native video streaming with proper range request support
+    const decryptedContentUrl = await encryptionService.decrypt(file.data.encryptedWebContentLink);
+    const contentUrl = new URL(decryptedContentUrl);
+    contentUrl.searchParams.set("confirm", "1");
     
-    return new Response(arrayBuffer, {
-      status: isFullyLoaded ? 200 : 206,
-      headers: headers,
+    return new NextResponse(null, {
+      status: 302,
+      headers: {
+        Location: contentUrl.toString(),
+      },
     });
   } catch (error) {
     const e = error as Error;
