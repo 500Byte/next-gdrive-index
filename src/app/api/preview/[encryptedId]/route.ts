@@ -19,33 +19,8 @@ export async function GET(
   },
 ) {
   const { encryptedId } = await params;
-  const sp = new URL(request.url).searchParams;
-  const isInline = sp.get("inline") === "1";
-  const isFull = sp.get("full") === "1";
-  const origin = request.headers.get("Origin") ?? request.headers.get("Referer") ?? request.headers.get("Host") ?? null;
-
-  const isProduction = () => {
-    const env = (globalThis as any).env;
-    const domain = env?.NEXT_PUBLIC_DOMAIN ?? config.basePath;
-    if (!origin || !domain) return false;
-    const originHost = new URL(origin).hostname;
-    const appHost = new URL(domain).hostname;
-    return originHost === appHost;
-  };
 
   try {
-    if (!origin) {
-      throw new Error("[500] Invalid request", {
-        cause: "Request headers is invalid",
-      });
-    }
-
-    if (isProduction() && origin.toLowerCase() !== config.basePath.toLowerCase()) {
-      throw new Error("[403] Unauthorized", {
-        cause: "Request is not allowed",
-      });
-    }
-
     const decryptedId = await encryptionService.decrypt(encryptedId);
     const file = await GetFile(encryptedId);
     if (!file.success) {
