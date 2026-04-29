@@ -92,7 +92,7 @@ const iconMap: Record<FileTypes | "unknown", keyof typeof icons> = {
   document: "FileSpreadsheet",
   code: "Code",
   executable: "AppWindow",
-  text: "Text",
+  text: "FileText",
   manga: "BookText",
   unknown: "File",
 };
