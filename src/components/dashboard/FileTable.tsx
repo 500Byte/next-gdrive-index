@@ -31,14 +31,14 @@ export default function FileTable({
 }: FileTableProps) {
   return (
     <section>
-      <h2 className="mb-4 text-lg font-semibold">All Files</h2>
-      <div className="rounded-md border">
+      <h2 className="mb-4 text-sm font-medium text-zinc-400 uppercase tracking-wide">All Files</h2>
+      <div className="rounded-md border border-zinc-800">
         <Table>
           <TableHeader>
-            <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead className="hidden sm:table-cell">Size</TableHead>
-              <TableHead className="hidden md:table-cell">Modified</TableHead>
+            <TableRow className="border-zinc-800 hover:bg-transparent">
+              <TableHead className="text-xs font-medium text-zinc-500 uppercase">Name</TableHead>
+              <TableHead className="hidden text-xs font-medium text-zinc-500 uppercase sm:table-cell">Size</TableHead>
+              <TableHead className="hidden text-xs font-medium text-zinc-500 uppercase md:table-cell">Modified</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -47,20 +47,20 @@ export default function FileTable({
               const Icon = isFolder ? Folder : FileText;
 
               return (
-                <TableRow key={file.encryptedId} className="cursor-pointer">
+                <TableRow key={file.encryptedId} className="cursor-pointer border-zinc-800 transition-colors hover:bg-zinc-900">
                   <TableCell>
                     <Link
                       href={`/${encodeURIComponent(file.name)}`}
-                      className="flex items-center gap-2"
+                      className="flex items-center gap-2 text-sm text-zinc-300"
                     >
-                      <Icon className="h-4 w-4 text-muted-foreground" />
+                      <Icon className="h-4 w-4 text-zinc-500" strokeWidth={1.5} />
                       <span className="line-clamp-1">{file.name}</span>
                     </Link>
                   </TableCell>
-                  <TableCell className="hidden sm:table-cell">
-                    {isFolder ? "-" : bytesToReadable(file.size ?? 0)}
+                  <TableCell className="hidden sm:table-cell font-mono text-xs text-zinc-500">
+                    {isFolder ? "-" : bytesToReadable(file.size || 0)}
                   </TableCell>
-                  <TableCell className="hidden md:table-cell text-muted-foreground">
+                  <TableCell className="hidden md:table-cell font-mono text-xs text-zinc-500">
                     {formatDate(file.modifiedTime)}
                   </TableCell>
                 </TableRow>
