@@ -34,17 +34,47 @@ export async function GET(
       });
     }
 
-    // Redirect to Google Drive direct download URL
-    // This allows native video streaming with proper range request support
+    // Opción 3B: Streaming proxy con CORS
+    // Hacer fetch a Google Drive pasando el Range header
     const decryptedContentUrl = await encryptionService.decrypt(file.data.encryptedWebContentLink);
     const contentUrl = new URL(decryptedContentUrl);
     contentUrl.searchParams.set("confirm", "1");
     
-    return new NextResponse(null, {
-      status: 302,
-      headers: {
-        Location: contentUrl.toString(),
-      },
+    // Pasar el Range header del request original (para seek/scrubbing)
+    const rangeHeader = request.headers.get("Range");
+    const fetchHeaders: HeadersInit = {};
+    if (rangeHeader) {
+      fetchHeaders["Range"] = rangeHeader;
+    }
+    
+    // Fetch desde el servidor
+    const driveResponse = await fetch(contentUrl.toString(), {
+      headers: fetchHeaders,
+    });
+
+    // Preparar headers con CORS
+    const responseHeaders = new Headers();
+    
+    // Copiar headers relevantes de Drive
+    const contentType = driveResponse.headers.get("Content-Type");
+    const contentRange = driveResponse.headers.get("Content-Range");
+    const acceptRanges = driveResponse.headers.get("Accept-Ranges");
+    const contentLength = driveResponse.headers.get("Content-Length");
+    
+    if (contentType) responseHeaders.set("Content-Type", contentType);
+    if (contentRange) responseHeaders.set("Content-Range", contentRange);
+    if (acceptRanges) responseHeaders.set("Accept-Ranges", acceptRanges);
+    if (contentLength) responseHeaders.set("Content-Length", contentLength);
+    
+    // Añadir CORS headers
+    responseHeaders.set("Access-Control-Allow-Origin", "*");
+    responseHeaders.set("Access-Control-Allow-Methods", "GET, HEAD, OPTIONS");
+    responseHeaders.set("Access-Control-Allow-Headers", "Range");
+    
+    // Response nativo (no NextResponse) para evitar interferencia de OpenNext
+    return new Response(driveResponse.body, {
+      status: driveResponse.status,
+      headers: responseHeaders,
     });
   } catch (error) {
     const e = error as Error;
