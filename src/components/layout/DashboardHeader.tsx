@@ -26,7 +26,7 @@ export default function DashboardHeader({ onMenuClick, onSearch }: DashboardHead
   const segments = pathname.split("/").filter(Boolean);
 
   return (
-    <header className="flex h-14 items-center gap-4 border-b bg-card px-4">
+    <header className="flex h-14 items-center gap-4 border-b border-zinc-800 bg-black px-4">
       <Button
         variant="ghost"
         size="icon"
@@ -72,7 +72,7 @@ export default function DashboardHeader({ onMenuClick, onSearch }: DashboardHead
           <Input
             type="search"
             placeholder="Search files..."
-            className="w-[200px] pl-8 lg:w-[300px]"
+            className="w-[200px] border-zinc-800 bg-zinc-950 pl-8 text-sm lg:w-[300px]"
             onChange={(e) => onSearch?.(e.target.value)}
           />
         </div>
