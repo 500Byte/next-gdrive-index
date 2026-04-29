@@ -45,9 +45,9 @@ export default function LeftSidebar() {
   const navigation = dashboard?.navigation ?? [];
 
   return (
-    <aside className="flex h-full w-[240px] flex-col border-r bg-card">
+    <aside className="flex h-full w-[240px] flex-col border-r border-zinc-800 bg-black">
       {/* Brand */}
-      <div className="flex h-14 items-center border-b px-4">
+      <div className="flex h-14 items-center border-b border-zinc-800 px-4">
         <Link href="/" className="flex items-center gap-2">
           <img
             src={brandLogo}
@@ -70,8 +70,8 @@ export default function LeftSidebar() {
                 key={item.path}
                 variant={isActive ? "secondary" : "ghost"}
                 className={cn(
-                  "w-full justify-start gap-2",
-                  isActive && "bg-secondary"
+                  "w-full justify-start gap-2 text-sm",
+                  isActive && "bg-zinc-900 text-white"
                 )}
                 asChild
               >
