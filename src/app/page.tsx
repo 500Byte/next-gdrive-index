@@ -1,53 +1,22 @@
-import { FileActions, FileBreadcrumb, FileExplorerLayout, FileReadme } from "~/components/explorer";
-import { ErrorComponent } from "~/components/layout";
-import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
-
-import { cn } from "~/lib/utils";
-
-import { GetReadme, ListFiles } from "~/actions/drive";
-
+import { DashboardPage } from "~/components/dashboard";
+import { ListFiles } from "~/actions/drive";
 import config from "config";
 
 export const revalidate = 60;
 export const dynamic = "force-dynamic";
 
-export default async function RootPage() {
-  const [data, readme] = await Promise.all([ListFiles({}), GetReadme()]);
-  if (!data.success) return <ErrorComponent error={new Error(data.error)} />;
-  if (!readme.success) return <ErrorComponent error={new Error(readme.error)} />;
+export default async function HomePage() {
+  const data = await ListFiles({});
+
+  if (!data.success) {
+    return <div>Error: {data.error}</div>;
+  }
 
   return (
-    <div className={cn("h-fit w-full", "flex flex-col gap-4")}>
-      <FileBreadcrumb />
-
-      <section
-        slot='content'
-        className='w-full'
-      >
-        <Card>
-          <CardHeader className='pb-0'>
-            <div className='flex w-full items-center justify-between gap-4'>
-              <CardTitle className='flex-grow'>Browse files</CardTitle>
-              <FileActions />
-            </div>
-          </CardHeader>
-
-          <CardContent className='p-2 pt-0 tablet:p-4 tablet:pt-0'>
-            <FileExplorerLayout
-              encryptedId={config.apiConfig.rootFolder}
-              files={data.data.files}
-              nextPageToken={data.data.nextPageToken ?? undefined}
-            />
-          </CardContent>
-        </Card>
-      </section>
-
-      {readme.data && (
-        <FileReadme
-          content={readme.data.content}
-          title={`README.${readme.data.type === "markdown" ? "md" : "txt"}`}
-        />
-      )}
-    </div>
+    <DashboardPage
+      encryptedId={config.apiConfig.rootFolder}
+      initialFiles={data.data.files}
+      nextPageToken={data.data.nextPageToken ?? undefined}
+    />
   );
 }
