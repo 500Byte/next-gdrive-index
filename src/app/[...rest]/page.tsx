@@ -2,10 +2,10 @@ import { type Metadata, type ResolvedMetadata } from "next";
 import { notFound } from "next/navigation";
 import { type z } from "zod";
 
-import { FileActions, FileBreadcrumb, FileExplorerLayout, FileReadme } from "~/components/explorer";
+import { FileBreadcrumb, FileReadme } from "~/components/explorer";
 import { ErrorComponent, Password } from "~/components/layout";
 import { PreviewLayout } from "~/components/preview";
-import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import { DashboardPage } from "~/components/dashboard";
 
 import { getFileType } from "~/lib/previewHelper";
 import { formatPathToBreadcrumb } from "~/lib/utils";
@@ -84,15 +84,8 @@ export default async function RestPage({ params }: Props) {
   const Layout: React.FC<{
     children: React.ReactNode;
   }> = ({ children }) => (
-    <div className='flex h-fit w-full flex-col gap-4'>
-      <FileBreadcrumb data={formatPathToBreadcrumb(paths.data)} />
-
-      <section
-        slot='content'
-        className='w-full'
-      >
-        {children}
-      </section>
+    <div className='flex h-fit w-full max-w-full flex-col gap-4'>
+      {children}
     </div>
   );
 
@@ -103,23 +96,11 @@ export default async function RestPage({ params }: Props) {
 
     return (
       <Layout>
-        <Card>
-          <CardHeader className='pb-0'>
-            <div className='flex w-full items-center justify-between gap-4'>
-              <CardTitle className='flex-grow'>Browse files</CardTitle>
-              <FileActions />
-            </div>
-          </CardHeader>
-
-          <CardContent className='p-2 pt-0 tablet:p-4 tablet:pt-0'>
-            <FileExplorerLayout
-              encryptedId={currentPath.id}
-              files={data.data.files}
-              nextPageToken={data.data.nextPageToken ?? undefined}
-              showBackButton
-            />
-          </CardContent>
-        </Card>
+        <DashboardPage
+          encryptedId={currentPath.id}
+          initialFiles={data.data.files}
+          nextPageToken={data.data.nextPageToken ?? undefined}
+        />
 
         {readme.data && (
           <FileReadme
