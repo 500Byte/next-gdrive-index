@@ -58,7 +58,7 @@ export default function FileTable({
                     </Link>
                   </TableCell>
                   <TableCell className="hidden sm:table-cell font-mono text-xs text-zinc-500">
-                    {isFolder ? "-" : bytesToReadable(file.size || 0)}
+                    {isFolder ? "-" : bytesToReadable(file.size ?? 0)}
                   </TableCell>
                   <TableCell className="hidden md:table-cell font-mono text-xs text-zinc-500">
                     {formatDate(file.modifiedTime)}
