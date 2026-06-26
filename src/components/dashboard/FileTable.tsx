@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { FileText, Folder } from "lucide-react";
 import { type z } from "zod";
 
@@ -29,6 +30,9 @@ export default function FileTable({
   onLoadMore,
   isLoading,
 }: FileTableProps) {
+  const pathname = usePathname();
+  const basePath = pathname === "/" ? "" : pathname;
+
   return (
     <section>
       <h2 className="mb-4 text-sm font-medium text-zinc-400 uppercase tracking-wide">All Files</h2>
@@ -45,12 +49,13 @@ export default function FileTable({
             {files.map((file) => {
               const isFolder = file.mimeType.includes("folder");
               const Icon = isFolder ? Folder : FileText;
+              const filePath = `${basePath}/${encodeURIComponent(file.name)}`;
 
               return (
                 <TableRow key={file.encryptedId} className="cursor-pointer border-zinc-800 transition-colors hover:bg-zinc-900">
                   <TableCell>
                     <Link
-                      href={`/${encodeURIComponent(file.name)}`}
+                      href={filePath}
                       className="flex items-center gap-2 text-sm text-zinc-300"
                     >
                       <Icon className="h-4 w-4 text-zinc-500" strokeWidth={1.5} />
